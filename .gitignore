@@ -1,0 +1,9 @@
+*.sln
+*.pdb
+*.exe
+*vcxproj*
+
+.vs/
+MultifacetedEngine_Debug/
+Debug/
+Release/
