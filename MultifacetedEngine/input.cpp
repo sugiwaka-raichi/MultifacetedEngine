@@ -104,7 +104,7 @@ HRESULT InitKeyboard(HINSTANCE hInst, HWND hWnd)
 	hr = g_pDInput->CreateDevice(GUID_SysKeyboard, &g_pDIDevKeyboard, NULL);
 	if(FAILED(hr) || g_pDIDevKeyboard == NULL)
 	{
-		MessageBox(hWnd, "キーボードが見つかりませんでした。", "警告！", MB_ICONWARNING);
+		MessageBox(hWnd, TEXT("キーボードが見つかりませんでした。"), TEXT("警告！"), MB_ICONWARNING);
 		return hr;
 	}
 
@@ -112,7 +112,7 @@ HRESULT InitKeyboard(HINSTANCE hInst, HWND hWnd)
 	hr = g_pDIDevKeyboard->SetDataFormat(&c_dfDIKeyboard);
 	if(FAILED(hr))
 	{
-		MessageBox(hWnd, "キーボードのデータフォーマットを設定できませんでした。", "警告！", MB_ICONWARNING);
+		MessageBox(hWnd, TEXT("キーボードのデータフォーマットを設定できませんでした。"), TEXT("警告！"), MB_ICONWARNING);
 		return hr;
 	}
 
@@ -120,7 +120,7 @@ HRESULT InitKeyboard(HINSTANCE hInst, HWND hWnd)
 	hr = g_pDIDevKeyboard->SetCooperativeLevel(hWnd, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
 	if(FAILED(hr))
 	{
-		MessageBox(hWnd, "キーボードの協調モードを設定できませんでした。", "警告！", MB_ICONWARNING);
+		MessageBox(hWnd, TEXT("キーボードの協調モードを設定できませんでした。"), TEXT("警告！"), MB_ICONWARNING);
 		return hr;
 	}
 
@@ -241,7 +241,7 @@ HRESULT InitMouse(HINSTANCE hInst, HWND hWnd)
 	hr = g_pDInput->CreateDevice(GUID_SysMouse, &g_pDIDevMouse, NULL);
 	if(FAILED(hr) || g_pDIDevMouse == NULL)
 	{
-		MessageBox(hWnd, "マウスが見つかりませんでした。", "警告！", MB_ICONWARNING);
+		MessageBox(hWnd, TEXT("マウスが見つかりませんでした。"), TEXT("警告！"), MB_ICONWARNING);
 		return hr;
 	}
 
@@ -249,7 +249,7 @@ HRESULT InitMouse(HINSTANCE hInst, HWND hWnd)
 	hr = g_pDIDevMouse->SetDataFormat(&c_dfDIMouse2);
 	if(FAILED(hr))
 	{
-		MessageBox(hWnd, "マウスのデータフォーマットを設定できませんでした。", "警告！", MB_ICONWARNING);
+		MessageBox(hWnd, TEXT("マウスのデータフォーマットを設定できませんでした。"), TEXT("警告！"), MB_ICONWARNING);
 		return hr;
 	}
 
@@ -257,7 +257,7 @@ HRESULT InitMouse(HINSTANCE hInst, HWND hWnd)
 	hr = g_pDIDevMouse->SetCooperativeLevel(hWnd, (DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
 	if(FAILED(hr))
 	{
-		MessageBox(hWnd, "マウスの協調モードを設定できませんでした。", "警告！", MB_ICONWARNING);
+		MessageBox(hWnd, TEXT("マウスの協調モードを設定できませんでした。"), TEXT("警告！"), MB_ICONWARNING);
 		return hr;
 	}
 
@@ -423,7 +423,7 @@ long GetMouseScreenY(void)
 long GetMouseX(void) {
 	POINT p;
 	GetCursorPos(&p);
-	ScreenToClient(FindWindowA(CLASS_NAME, nullptr), &p);		//スクリーン座標をクライアント座標へ変換
+	ScreenToClient(FindWindow(CLASS_NAME, nullptr), &p);		//スクリーン座標をクライアント座標へ変換
 	return p.x;
 }
 
@@ -433,6 +433,22 @@ long GetMouseX(void) {
 long GetMouseY(void) {
 	POINT p;
 	GetCursorPos(&p);
-	ScreenToClient(FindWindowA(CLASS_NAME, nullptr), &p);		//スクリーン座標をクライアント座標へ変換
+	ScreenToClient(FindWindow(CLASS_NAME, nullptr), &p);		//スクリーン座標をクライアント座標へ変換
 	return p.y;
+}
+
+DIMOUSESTATE2 GetMousePress(void) {
+	return g_mouseState;
+}
+
+BYTE GetMousePress(int _key) {
+	return g_mouseState.rgbButtons[_key];
+}
+
+DIMOUSESTATE2 GetMouseTrigger(void) {
+	return g_mouseStateTrigger;
+}
+
+BYTE GetMouseTrigger(int _key) {
+	return g_mouseStateTrigger.rgbButtons[_key];
 }

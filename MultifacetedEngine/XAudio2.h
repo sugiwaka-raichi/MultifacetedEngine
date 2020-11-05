@@ -3,14 +3,19 @@
 // サウンド処理 [XAudio2.h]
 //
 //=============================================================================
-#ifndef _XAUDIO2_H_
-#define _XAUDIO2_H_
-
-#include <string>
+//#ifndef _XAUDIO2_H_
+//#define _XAUDIO2_H_
+#pragma once
 #include <xaudio2.h>
+#include "Win.h"
 
 using namespace std;
 
+#ifdef UNICODE
+#define string wstring
+#else
+#define string string
+#endif
 // サウンドファイル
 /*
 typedef enum
@@ -34,5 +39,3 @@ void SetAudio(float per);
 void SetSoundType();
 void SetSoundType(string oldname, string newname);
 //void AddSoundType(string type);
-
-#endif
