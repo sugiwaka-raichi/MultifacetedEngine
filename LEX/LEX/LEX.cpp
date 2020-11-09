@@ -28,11 +28,16 @@ void LEX::Analysis(string _str) {
 	string buff;				//バッファ
 
 	//字句解析のメインループ
+
 	for (int i = 0; i < str.size(); i++) {
 
 		//7bitの範囲(ASCII CODE)
-		if (str[i] >= 0) {
+#ifdef UNICODE
+		if (str[i] < 0x7F) {	//7bit(ASCII)の範囲を超えるので
+#else
+		if (str[i] >= 0 ) {		//8bit目が1であれば負数になるので
 
+#endif
 			//------------------
 			//数値
 			//------------------
@@ -84,6 +89,10 @@ void LEX::Analysis(string _str) {
 			if (!Symbol(str[i])) {
 				buff += str[i];
 				continue;
+			}
+			else {
+				//あればiを元に戻す
+				i--;
 			}
 		}
 	}

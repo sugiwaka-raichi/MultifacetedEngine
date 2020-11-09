@@ -4,6 +4,12 @@
 
 using namespace std;
 
+#ifdef UNICODE
+#define string wstring
+#else
+#define string string
+#endif
+
 //================================
 //ƒg[ƒNƒ“‚Ìí—Ş
 //================================
