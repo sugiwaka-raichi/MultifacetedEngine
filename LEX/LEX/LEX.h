@@ -17,21 +17,23 @@ typedef enum TOKEN_TYPE {
 	TT_NULL = 0,		//null
 
 	TT_STRING,			//文字列
-	TT_VARIABLE,		//変数
+	TT_VARIABLE,		//変数(欠)
 	TT_NUMBER,			//数値
-	TT_SEPARATION,		//区切り文字
+	TT_SEPARATION,		//区切り文字(欠)
 
 	//-----------------
 	//記号類
-	TT_CRLF,			//改行
+	TT_CRLF,			// 改行
 	TT_SHARP,			// #
 	TT_TAB,				// TAB
-	TT_SPACE,			//SPACE
+	TT_SPACE,			// SPACE
 	TT_SPAR,			// (
 	TT_EPAR,			// )
 	TT_SBRACKET,		// [
 	TT_EBRACKET,		// ]
 	TT_VBAR,			// |
+	TT_DOLL,			// $
+	TT_NOT,				// !
 
 	//----------------
 	//演算子

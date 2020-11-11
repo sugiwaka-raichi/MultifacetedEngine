@@ -43,6 +43,14 @@ void LEX::Analysis(string _str) {
 			//------------------
 			if (isdigit(str[i])) {
 				number = true;		//数値と仮定する
+				if (strFlg) {
+					strFlg = false;
+					TOKEN tmp;
+					tmp.str = buff;							//情報をトークンとして記録
+					tmp.type = TOKEN_TYPE::TT_STRING;		//文字列
+					buff.clear();		//クリア
+					tokenList.push_back(tmp);		//リストに記録
+				}
 				buff += str[i];
 				continue;
 			}
@@ -138,6 +146,10 @@ bool LEX::Symbol(char _symbol) {
 		break;
 	case ']':
 		break;
+	case '$':
+		break;
+	case '!':
+		break;
 	default:
 		return false;
 	}
@@ -184,6 +196,10 @@ int LEX::JudgeSymbol(char _symbol)
 		return TOKEN_TYPE::TT_SBRACKET;
 	case ']':
 		return TOKEN_TYPE::TT_EBRACKET;
+	case '$':
+		return TOKEN_TYPE::TT_DOLL;
+	case '!':
+		return TOKEN_TYPE::TT_NOT;
 	default:
 		return -1;
 	}
