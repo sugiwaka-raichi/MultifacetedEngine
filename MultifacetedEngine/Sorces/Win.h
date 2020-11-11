@@ -35,18 +35,8 @@ using namespace std;
 #define SCREEN_WIDTH  (800)		//ウィンドウの幅
 #define SCREEN_HEIGHT (600)		//ウィンドウの高さ
 
-#define CLASS_NAME	TEXT("Class Name")
-#define WINDOW_NAME	TEXT("Title")
-#ifdef UNICODE
-//ユニコード用
-
-#define string wstring	//ユニコード用string
-#define LPCSTR LPWSTR	//ユニコード用LPCSTR
-#else
-//マルチバイト用
-#define string string		//マルチバイトstring
-#define LPCSTR LPCSTR		//マルチバイトLPSTR
-#endif
+#define CLASS_NAME	("Class Name")
+#define WINDOW_NAME	("Title")
 #define FULLSCREEN 	false				//フルスクリーンﾌﾗｸﾞ
 
 #define FVF_VERTEX_2D (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)

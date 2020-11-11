@@ -3,22 +3,14 @@
 // 入力処理 [input.h]
 //
 //=============================================================================
-//#ifndef _INPUT_H_
-//#define _INPUT_H_
-#pragma once
+#ifndef _INPUT_H_
+#define _INPUT_H_
+
 #define DIRECTINPUT_VERSION 0x0800
 
 #include <dinput.h>
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dinput8.lib")
-
-typedef enum {
-	LEFT,
-	RIGHT,
-	CENTER,
-	BACK,
-	FORWARD
-}MOUSE_KEYTYPE;
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -45,9 +37,5 @@ long GetMouseScreenX(void);
 long GetMouseScreenY(void);
 long GetMouseX(void);
 long GetMouseY(void);
-DIMOUSESTATE2 GetMousePress(void);		//MOUSEクリック状況(押されているか)
-BYTE GetMousePress(int);				//取得データ制限
-DIMOUSESTATE2 GetMouseTrigger(void);	//MOUSEクリック状況(押されたか）
-BYTE GetMouseTrigger(int);				//取得データ制限
 
-//#endif
+#endif

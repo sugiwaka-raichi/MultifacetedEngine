@@ -3,7 +3,7 @@
 #include "LIST.h"
 #include "FileOperation.h"
 
-#define DEFAULT_TEXTURE_PATH 	TEXT("./Asset/Texture/")
+#define DEFAULT_TEXTURE_PATH 	"./Asset/Texture/"
 
 typedef struct {
 	DIRECTORY_DATA*				filedata;	//ファイル名とファイル数

@@ -45,8 +45,7 @@ bool TextureManager::FileDataInit() {
 	tex_directory = DEFAULT_TEXTURE_PATH;		//テクスチャディレクトリ名
 	texture_data.filedata = FileOperation::GetDirectoryData(tex_directory);	//ディレクトリ内の情報を取得
 	if (texture_data.filedata == nullptr) {
-		ErrorMessage::ErrorMessageBox(LPCSTR("ディレクトリの情報取得に失敗しました。"), LPCSTR("Texture Init Error"), MB_OK);
-		exit(1);
+		ErrorMessage::ErrorMessageBox("ディレクトリの情報取得に失敗しました。", "Texture Init Error", MB_OK);
 		return false;
 	}
 	texture_data.loadflag.resize(texture_data.filedata->filenum);		//フラグの要素数変更
@@ -66,21 +65,20 @@ bool TextureManager::TextureLoad(string filename) {
 	for (int i = 0; i < texture_data.filedata->filenum; i++) {
 		//対象のファイルかファイル名で確認
 		if (texture_data.filedata->filename[i] == filename) {
-			string filepath = tex_directory + TEXT("/") + filename;	//読み込みに使うファイルパスを作成
+			string filepath = tex_directory + "/" + filename;	//読み込みに使うファイルパスを作成
 			//ロード処理
 			if (FAILED(D3DXCreateTextureFromFile(GetDevice(), filepath.c_str(), &texture_data.texture[i]))) {
 				//失敗した場合エラーメッセージを出す
-				string mes = TEXT("画像データ:") + texture_data.filedata->filename[i] + TEXT("が、\n正しく読み込まれませんでした。");
-				ErrorMessage::ErrorMessageBox((LPCSTR)mes.c_str(), (LPCSTR)"TextureLoadError", MB_OK);
-				texture_data.texture[i] = nullptr;
+				string mes = "画像データ:" + texture_data.filedata->filename[i] + "が、\n正しく読み込まれませんでした。";
+				ErrorMessage::ErrorMessageBox(mes.c_str(), "TextureLoadError", MB_OK);
 			}
 			texture_data.loadflag[i] = true;		//ロード
 			return true;	//ロード成功
 		}
 	}
 	//フォルダ内になければエラーメッセージを表示
-	string str = TEXT("画像データ:") + filename + TEXT("が、\n見つかりませんでした。");
-	ErrorMessage::ErrorMessageBox((LPCSTR)str.c_str(), (LPCSTR)"TextureLoadError", MB_OK);
+	string str = "画像データ:" + filename + "が、\n見つかりませんでした。";
+	ErrorMessage::ErrorMessageBox(str.c_str(), "TextureLoadError", MB_OK);
 	return false;
 }
 
@@ -110,8 +108,8 @@ LPDIRECT3DTEXTURE9 TextureManager::GetTexture(string texturename) {
 			break;
 		}
 	}
-	//ロードされていなければロードを行う ※エラー無限ループ
-	//TextureLoad(texturename);
+	//見つからなかった、もしくはロードされていなければロードを行う
+	TextureLoad(texturename);
 
 	return nullptr;		//一致するテクスチャがなかったらnullを返す
 }

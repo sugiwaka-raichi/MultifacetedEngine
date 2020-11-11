@@ -16,15 +16,11 @@ protected:
 	}VERTEX_2D;
 
 	VERTEX_2D vertex[4];		//頂点情報
-	float x, y;		//座標
-	float w, h;		//大きさ
-	float u, v;		//テクスチャ表示範囲
-	int up, vp;		//テクスチャ表示位置
-	float angle;	//回転角
-	int layer;		//レイヤー　表示順決定に使う
-	bool show_flag;	//表示フラグ
-	LPDIRECT3DTEXTURE9*	tex;		//テクスチャポインタ
-	char* tag;						//外部参照用オブジェクト名
+	float x, y;
+	float w, h;
+	float u, v;
+	int up, vp;
+	float angle;
 
 	void CreateVertex();		//頂点情報の作成
 	//void Rotation();		//回転
@@ -39,8 +35,7 @@ public:
 	void DirectionMove(float _amount);	//方向移動
 	void DirectionMove(float _amount, float _angle);	//方向移動
 	void DrawPolygon();		//描画
-	void DrawPolygon(LPDIRECT3DTEXTURE9* texture);		//描画
-	void DrawPolygon(LPDIRECT3DTEXTURE9 texture);		//テクスチャ指定描画
+	void DrawPolygon(LPDIRECT3DTEXTURE9 texture);		//テクスチャ付き描画
 
 	//-----------------------------------
 	//セッター
@@ -54,9 +49,6 @@ public:
 	void SetUP(int _up);
 	void SetVP(int _vp);
 	void SetAngle(float _angle);
-	void SetLayer(int _layer);
-	void SetTag(char* tag);
-	void SetTexture(LPDIRECT3DTEXTURE9* p_tex);
 
 	//-----------------------------------
 	//ゲッター
@@ -70,7 +62,5 @@ public:
 	int GetUP();
 	int GetVP();
 	float GetAngle();
-	int GetLayer();
-	char* GetTag();
 };
 

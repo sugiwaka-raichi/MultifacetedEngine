@@ -2,7 +2,6 @@
 
 //コンストラクタ
 SquarePolygon::SquarePolygon() {
-	tex = nullptr;		//テクスチャポインタにnull
 	//初期化処理
 	CreatePolygon(0, 0, 0, 0);
 	return;
@@ -10,7 +9,6 @@ SquarePolygon::SquarePolygon() {
 
 //引数付きコンストラクタ
 SquarePolygon::SquarePolygon(float get_x, float get_y, float get_w, float get_h) {
-	tex = nullptr;		//テクスチャポインタにnull
 	//初期化処理
 	CreatePolygon(get_x, get_y, get_w, get_h);
 }
@@ -20,12 +18,10 @@ SquarePolygon::~SquarePolygon() {
 
 }
 
-//ポリゴンの作成
 void SquarePolygon::CreatePolygon(float get_x, float get_y, float get_w, float get_h) {
 	CreatePolygon(get_x, get_y, get_w, get_h, 0);
 }
 
-//ポリゴンの作成（角度付き）
 void SquarePolygon::CreatePolygon(float get_x, float get_y, float get_w, float get_h, float get_angle) {
 	x = get_x;		//x座標
 	y = get_y;		//y座標
@@ -43,7 +39,6 @@ void SquarePolygon::CreatePolygon(float get_x, float get_y, float get_w, float g
 	}
 }
 
-//頂点情報作成
 void SquarePolygon::CreateVertex() {
 	//----------------------------
 	//頂点情報の作成
@@ -106,23 +101,13 @@ void SquarePolygon::CreateVertex() {
 	}
 }
 
-//描画(保持テクスチャ)
 void SquarePolygon::DrawPolygon() {
 	CreateVertex();
 	//テクスチャなし描画
-	GetDevice()->SetTexture(0, *tex);
+	GetDevice()->SetTexture(0, nullptr);
 	GetDevice()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VERTEX_2D));
 }
 
-//描画(指定テクスチャポインタ)
-void SquarePolygon::DrawPolygon(LPDIRECT3DTEXTURE9* texture) {
-	CreateVertex();
-	//テクスチャ付き描画
-	GetDevice()->SetTexture(0, *texture);
-	GetDevice()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VERTEX_2D));
-}
-
-//描画(指定テクスチャ)
 void SquarePolygon::DrawPolygon(LPDIRECT3DTEXTURE9 texture) {
 	CreateVertex();
 	//テクスチャ付き描画
@@ -169,18 +154,6 @@ void SquarePolygon::SetAngle(float get_angle) {
 	angle = get_angle;
 }
 
-void SquarePolygon::SetLayer(int _layer) {
-	layer = _layer;
-}
-
-void SquarePolygon::SetTag(char* _tag) {
-	tag = _tag;
-}
-
-void SquarePolygon::SetTexture(LPDIRECT3DTEXTURE9* p_tex) {
-	tex = p_tex;		//テクスチャポインタ保持
-}
-
 //================================================
 //ゲッター
 //================================================
@@ -220,10 +193,3 @@ float SquarePolygon::GetAngle() {
 	return angle;
 }
 
-int SquarePolygon::GetLayer() {
-	return layer;
-}
-
-char* SquarePolygon::GetTag() {
-	return tag;
-}
