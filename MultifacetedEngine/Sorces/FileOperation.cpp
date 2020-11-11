@@ -1,5 +1,8 @@
 #include "FileOperation.h"
 
+//========================================
+//ƒfƒBƒŒƒNƒgƒŠ‚Ìî•ñæ“¾
+//========================================
 DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 	DIRECTORY_DATA* data;			//ƒtƒ@ƒCƒ‹”‚Æƒtƒ@ƒCƒ‹–¼
 	HANDLE hwnd;				//ƒnƒ“ƒhƒ‹
@@ -54,10 +57,16 @@ DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 	return data;		//ì¬‚µ‚½ƒf[ƒ^‚ğ“n‚·
 }
 
+//==============================
+//–³ğŒƒtƒHƒ‹ƒ_[‘”‚ğæ“¾
+//==============================
 int FileOperation::GetFolderSum(DIRECTORY_DATA* _data) {
 	return GetFolderSum(_data, F_FIND_MODE::FM_NONE);
 }
 
+//============================
+//ƒtƒHƒ‹ƒ_[‘”‚ğæ“¾
+//============================
 int FileOperation::GetFolderSum(DIRECTORY_DATA* _data, int _findmode) {
 	int cnt = 0;
 	
@@ -94,6 +103,9 @@ int FileOperation::GetFolderSum(DIRECTORY_DATA* _data, int _findmode) {
 	return cnt;
 }
 
+//=================================
+//ƒtƒ@ƒCƒ‹‘”‚ğæ“¾
+//=================================
 int FileOperation::GetFileSum(DIRECTORY_DATA* _data, string _findmode) {	//ğŒ•t‚«ƒfƒBƒŒƒNƒgƒŠ‚ÌƒtƒHƒ‹ƒ_”
 	int cnt = 0;
 
@@ -108,6 +120,9 @@ int FileOperation::GetFileSum(DIRECTORY_DATA* _data, string _findmode) {	//ğŒ•
 	return cnt;		//Œ»İ‚ÌƒtƒHƒ‹ƒ_”‚ğ•Ô‚·
 }
 
+//===================================
+//ƒtƒHƒ‹ƒ_[ƒpƒX‚ğæ“¾
+//===================================
 vector<string> FileOperation::GetFolderPath(DIRECTORY_DATA* _data, int _findmode) {
 	vector<string> path;
 	vector<string> get;
@@ -152,6 +167,9 @@ vector<string> FileOperation::GetFolderPath(DIRECTORY_DATA* _data, int _findmode
 	return path;		//ƒtƒHƒ‹ƒ_ƒpƒX‚ğ“n‚·
 }
 
+//============================================
+//ƒtƒ@ƒCƒ‹–¼æ“¾
+//============================================
 vector<string> FileOperation::GetFileName(string filedata) {
 	vector<string> filename;
 	HANDLE hwnd;
