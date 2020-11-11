@@ -104,7 +104,17 @@ void LEX::Analysis(string _str) {
 			}
 		}
 	}
-	
+
+	//---------------------
+	//ÅI•¶š—ñ‚ğæ“¾
+	//---------------------
+	if (strFlg) {
+		TOKEN tmp;
+		tmp.str = buff;
+		buff.clear();
+		tmp.type = TOKEN_TYPE::TT_STRING;
+		tokenList.push_back(tmp);
+	}
 }
 
 //======================================
