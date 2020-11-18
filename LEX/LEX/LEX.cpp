@@ -88,7 +88,7 @@ void LEX::Analysis(string _str) {
 			}
 
 		}
-		//ASCII codeの範囲から出るサイズの文字コード
+		//ASCII codeとその範囲から出るサイズの文字コード
 		strFlg = true;
 		buff += str[i];
 		if (i + 1 < str.size()) {
@@ -130,22 +130,6 @@ bool LEX::Symbol(char _symbol) {
 		break;
 	case '#':		//SHARP
 		break;
-	case '=':
-		break;
-	case '+':
-		break;
-	case '-':
-		break;
-	case '*':
-		break;
-	case '/':
-		break;
-	case '%':
-		break;
-	case '<':
-		break;
-	case '>':
-		break;
 	case '|':
 		break;
 	case '(':
@@ -158,8 +142,24 @@ bool LEX::Symbol(char _symbol) {
 		break;
 	case '$':
 		break;
-	case '!':
+	case '=':
+		//break;
+	case '+':
+		//break;
+	case '-':
+		//break;
+	case '*':
+		//break;
+	case '/':
+		//break;
+	case '%':
 		break;
+	//case '<':
+	//	break;
+	//case '>':
+	//	break;
+	//case '!':
+	//	break;
 	default:
 		return false;
 	}
@@ -181,21 +181,22 @@ int LEX::JudgeSymbol(char _symbol)
 	case '#':		//SHARP
 		return TOKEN_TYPE::TT_SHARP;
 	case '=':
-		return TOKEN_TYPE::TT_EQUAL;
+		//return TOKEN_TYPE::TT_EQUAL;
 	case '+':
-		return TOKEN_TYPE::TT_PLUS;
+		//return TOKEN_TYPE::TT_PLUS;
 	case '-':
-		return TOKEN_TYPE::TT_MINUS;
+		//return TOKEN_TYPE::TT_MINUS;
 	case '*':
-		return TOKEN_TYPE::TT_ASTERISK;
+		//return TOKEN_TYPE::TT_ASTERISK;
 	case '/':
-		return TOKEN_TYPE::TT_SLASH;
+		//return TOKEN_TYPE::TT_SLASH;
 	case '%':
-		return TOKEN_TYPE::TT_PERCENT;
-	case '<':
-		return TOKEN_TYPE::TT_LESS;
-	case '>':
-		return TOKEN_TYPE::TT_GREATOR;
+		//return TOKEN_TYPE::TT_PERCENT;
+		return TOKEN_TYPE::TT_OP;
+	//case '<':
+	//	return TOKEN_TYPE::TT_LESS;
+	//case '>':
+	//	return TOKEN_TYPE::TT_GREATOR;
 	case '|':
 		return TOKEN_TYPE::TT_VBAR;
 	case '(':
@@ -208,8 +209,8 @@ int LEX::JudgeSymbol(char _symbol)
 		return TOKEN_TYPE::TT_EBRACKET;
 	case '$':
 		return TOKEN_TYPE::TT_DOLL;
-	case '!':
-		return TOKEN_TYPE::TT_NOT;
+	//case '!':
+	//	return TOKEN_TYPE::TT_NOT;
 	default:
 		return -1;
 	}

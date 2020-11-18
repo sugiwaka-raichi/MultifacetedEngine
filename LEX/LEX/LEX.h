@@ -37,6 +37,7 @@ typedef enum TOKEN_TYPE {
 
 	//----------------
 	//演算子
+	TT_OP,			// 演算子
 	TT_EQUAL,		// =
 	TT_PLUS,		// +
 	TT_MINUS,		// -
@@ -45,6 +46,8 @@ typedef enum TOKEN_TYPE {
 	TT_PERCENT,		// %
 	TT_LESS,		// <
 	TT_GREATOR,		// >
+
+	TT_END			//終端記号
 };
 
 //===========================
