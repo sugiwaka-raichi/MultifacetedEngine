@@ -18,18 +18,41 @@ LEX & LEX::GetInstance()
 //======================================
 void LEX::Analysis(string _str) {
 	str = _str;
-	str.push_back('\0');		//終末文字を登録
+
 	//-----------------------------------
 	//仮定フラグ群
 	//-----------------------------------
 	bool number = false;		//数値と仮定するかどうか
 	bool strFlg = false;		//文字列として扱っている
-
+	bool comment = false;		//コメントとして処理する
 	string buff;				//バッファ
 
 	//字句解析のメインループ
 
 	for (int i = 0; i < str.size(); i++) {
+		//\rは読み飛ばす
+		if (str[i] == '\r') {
+			continue;
+		}
+		//---------------------
+		//コメント部分の処理
+		//---------------------
+		if (str[i] == '/') {		//一回目の/
+			if (str.size() > 0) {	//次文字があれば
+				if (str[i + 1] == '/') {		//二回目の/
+					//これはコメントなので字句分割を行わない
+					comment = true;
+				}
+			}
+		}
+		//コメントフラグがたっていれば
+		if (comment) {
+			//改行されるまで読み飛ばす
+			if (str[i] == '\n') {
+				comment = false;		//改行されればコメントフラグをおってコメント終了
+			}
+			continue;
+		}
 
 		//7bitの範囲(ASCII CODE)
 #ifdef UNICODE
@@ -90,6 +113,15 @@ void LEX::Analysis(string _str) {
 		}
 		//ASCII codeとその範囲から出るサイズの文字コード
 		strFlg = true;
+		if (number) {
+			//数値フラグがたっていれば
+			number = false;
+			TOKEN tmp;
+			tmp.str = buff;		//情報をトークンとして記録
+			tmp.type = TOKEN_TYPE::TT_NUMBER;
+			buff.clear();		//クリア
+			tokenList.push_back(tmp);		//リストに記録
+		}
 		buff += str[i];
 		if (i + 1 < str.size()) {
 			i++;
@@ -154,6 +186,8 @@ bool LEX::Symbol(char _symbol) {
 		//break;
 	case '%':
 		break;
+	case '\r':
+		return false;
 	//case '<':
 	//	break;
 	//case '>':
@@ -211,6 +245,8 @@ int LEX::JudgeSymbol(char _symbol)
 		return TOKEN_TYPE::TT_DOLL;
 	//case '!':
 	//	return TOKEN_TYPE::TT_NOT;
+	case '\r':
+		return -1;
 	default:
 		return -1;
 	}
