@@ -294,11 +294,15 @@ void PARSE::Rules(int _rulenum) {
 		}
 		else {
 			//エラー
-			cout << "不一致\n入力:" << input[0].type << "スタック:" << token_stack.back() << endl;
+			cout << "\033[31m";
+			cout << "不一致\n入力:" << input[0].type << "	スタック:" << token_stack.back() << endl;
+
 			getchar();
 			for (int i = 0; i < token_stack.size(); i++) {
 				cout << "スタック" << i << ":" << token_stack[i] << endl;
 			}
+			cout << "\033[m";
+
 			getchar();
 		}
 		break;
@@ -651,7 +655,10 @@ void PARSE::Analysis(vector<TOKEN> _tokenList) {
 
 		int rulesnum = RulesNum(stack[0], input[0].type);		//スタックとトークンの先頭を比べ適応すべきルールを取得する
 		if (rulesnum == -1) {
+			wcout << L"\033[31m";
 			cout << "ERROR" << input[0].type;
+			wcout << L"\033[m";
+
 			getchar();
 		}
 		else {
@@ -678,7 +685,11 @@ void PARSE::Analysis(vector<TOKEN> _tokenList) {
 			}
 			else {
 				//入力が残っている
+				wcout << L"\033[31m";
+
 				cout << "エラー:入力値が残っている" << endl;
+				wcout << L"\033[m";
+
 				return;
 			}
 		}
