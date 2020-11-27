@@ -23,6 +23,7 @@ void LEX::Analysis(string _str) {
 	//仮定フラグ群
 	//-----------------------------------
 	bool number = false;		//数値と仮定するかどうか
+	bool period = false;		//小数点が入ったかどうか
 	bool strFlg = false;		//文字列として扱っている
 	bool comment = false;		//コメントとして処理する
 	string buff;				//バッファ
@@ -78,9 +79,14 @@ void LEX::Analysis(string _str) {
 				continue;
 			}
 			else if (str[i] == '.') {		//ピリオドであれば
-				if (number) {
+				if (number && !period) {
 					buff += str[i];
+					period = true;
 					continue;
+				}
+				else {						//ピリオドが二つ以上入ったとき数値として扱わない
+					number = false;
+					period = false;
 				}
 			}
 			else {
