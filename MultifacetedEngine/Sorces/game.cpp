@@ -19,12 +19,7 @@ LPD3DXFONT	g_pD3DXFont = nullptr;		//フォント
 //XAudio2 xaudio;
 SquarePolygon test(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,100,100);
 TextureManager TexManager;
-<<<<<<< HEAD
 Text testText;
-=======
-Text testtex;
-
->>>>>>> dev_/Update
 
 bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen) {
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -100,7 +95,7 @@ bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen
 	LoadWave(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"), true);
 	TextureManager::FileDataInit();
 	TextureManager::TextureLoad(TEXT("IMG_0914.PNG"));
-	testtex.InitText();
+	testText.InitText();
 
 	//テスト
 	test.SetU(1);
@@ -131,12 +126,12 @@ void GameUpdate() {
 	if (ang % 601 == 120) {
 		StopSound(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"));
 	}
-	testtex.ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-	if (GetMousePress(MOUSE_KEYTYPE::FORWARD)) {
-		testtex.ChangeText(TEXT("back"));	//back
+	testText.ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (GetMousePress(MOUSE_KEYTYPE::BACK)) {
+		testText.ChangeText(TEXT("back"));	//back
 	}
-	if (GetMousePress(4)) {
-		testtex.ChangeText(TEXT("forward")); //fo
+	if (GetMousePress(MOUSE_KEYTYPE::FORWARD)) {
+		testText.ChangeText(TEXT("forward")); //fo
 	}
 }
 
@@ -148,13 +143,9 @@ void GameRender() {
 		g_pD3DDevice->SetFVF(FVF_VERTEX_2D);
 
 		//g_pD3DDevice->SetTexture(0, TextureManager::GetTexture("IMG_0914.PNG"));
-<<<<<<< HEAD
-		test.DrawPolygon(TextureManager::GetTexture("IMG_0914.PNG"));
-		testText.TextDraw();
-=======
+
 		test.DrawPolygon(TextureManager::GetTexture(TEXT("IMG_0914.PNG")));
-		testtex.TextDraw();
->>>>>>> dev_/Update
+		testText.TextDraw();
 		g_pD3DDevice->EndScene();
 	}
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);

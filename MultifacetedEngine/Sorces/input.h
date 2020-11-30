@@ -12,14 +12,6 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dinput8.lib")
 
-<<<<<<< HEAD
-enum MOUSE_KEYTYPE {
-	LEFT = 0,
-	RIGHT,
-	CENTER,
-	FORWARD,
-};
-=======
 typedef enum {
 	LEFT,
 	RIGHT,
@@ -27,7 +19,6 @@ typedef enum {
 	BACK,
 	FORWARD
 }MOUSE_KEYTYPE;
->>>>>>> dev_/Update
 
 //*****************************************************************************
 // プロトタイプ宣言
