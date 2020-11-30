@@ -7,5 +7,9 @@
 MultifacetedEngine_Debug/
 Debug/
 Release/
+<<<<<<< HEAD
 *.ilk
 *.rej
+=======
+MultifacetedEngine/MultifacetedEngine_Debugx86.ilk
+>>>>>>> dev_/Update

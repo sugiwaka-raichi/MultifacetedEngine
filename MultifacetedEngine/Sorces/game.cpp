@@ -19,7 +19,12 @@ LPD3DXFONT	g_pD3DXFont = nullptr;		//フォント
 //XAudio2 xaudio;
 SquarePolygon test(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,100,100);
 TextureManager TexManager;
+<<<<<<< HEAD
 Text testText;
+=======
+Text testtex;
+
+>>>>>>> dev_/Update
 
 bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen) {
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -89,13 +94,13 @@ bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen
 	g_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 	//フォント作成
-	D3DXCreateFont(g_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &g_pD3DXFont);
-	
+	D3DXCreateFont(g_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, TEXT("Terminal"), &g_pD3DXFont);
 	InitInput(hinst, hWnd);
 	/*xaudio.*/InitSound();
-	LoadWave("./Asset/Sound/BGM/", "play.wav", true);
+	LoadWave(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"), true);
 	TextureManager::FileDataInit();
-	TextureManager::TextureLoad("IMG_0914.PNG");
+	TextureManager::TextureLoad(TEXT("IMG_0914.PNG"));
+	testtex.InitText();
 
 	//テスト
 	test.SetU(1);
@@ -115,7 +120,7 @@ void GameUpdate() {
 		soundflg = true;
 	}
 	if (soundflg) {
-		/*xaudio.*/PlaySound("./Asset/Sound/BGM/","play.wav");
+		/*xaudio.*/PlaySound(TEXT("BGM"), TEXT("play.wav"));
 		soundflg = false;
 	}
 
@@ -124,9 +129,15 @@ void GameUpdate() {
 	test.SetAngle(10 + ang);
 	
 	if (ang % 601 == 120) {
-		StopSound("./Asset/Sound/BGM/", "play.wav");
+		StopSound(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"));
 	}
-	
+	testtex.ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (GetMousePress(MOUSE_KEYTYPE::FORWARD)) {
+		testtex.ChangeText(TEXT("back"));	//back
+	}
+	if (GetMousePress(4)) {
+		testtex.ChangeText(TEXT("forward")); //fo
+	}
 }
 
 void GameRender() {
@@ -137,8 +148,13 @@ void GameRender() {
 		g_pD3DDevice->SetFVF(FVF_VERTEX_2D);
 
 		//g_pD3DDevice->SetTexture(0, TextureManager::GetTexture("IMG_0914.PNG"));
+<<<<<<< HEAD
 		test.DrawPolygon(TextureManager::GetTexture("IMG_0914.PNG"));
 		testText.TextDraw();
+=======
+		test.DrawPolygon(TextureManager::GetTexture(TEXT("IMG_0914.PNG")));
+		testtex.TextDraw();
+>>>>>>> dev_/Update
 		g_pD3DDevice->EndScene();
 	}
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
