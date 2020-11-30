@@ -13,7 +13,7 @@ using namespace std;
 //================================
 //トークンの種類
 //================================
-typedef enum TOKEN_TYPE {
+typedef enum class TOKEN_TYPE {
 	TT_NULL = 0,		//null
 
 	TT_STRING,			//文字列
@@ -65,7 +65,7 @@ private:
 
 	LEX();			//コンストラクタを外部からの呼び出し禁止
 	bool Symbol(char _symbol);		//記号判定処理
-	int  JudgeSymbol(char _symbol);	//記号識別処理
+	TOKEN_TYPE JudgeSymbol(char _symbol);	//記号識別処理
 
 public:
 	static LEX& GetInstance();		//インスタンスを取得する関数
