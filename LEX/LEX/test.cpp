@@ -33,6 +33,9 @@ int main() {
 
 		wcout << script << "\n" << endl;
 
+		//--------------------------------------------------
+		//ˆêsˆ—
+		//--------------------------------------------------
 		for (int i = 0; i < line_script.size(); i++) {
 			wcout << L"\033[32m";
 			wcout << line_script[i] << endl;
@@ -46,7 +49,7 @@ int main() {
 #ifdef UNICODE
 				wcout << L"\033[33m";
 
-				wcout << "type:" << token[i].type;
+				wcout << "type:" << (int)token[i].type;
 				wcout << "	|str :" << token[i].str << endl;
 				wcout << L"\033[m";
 
