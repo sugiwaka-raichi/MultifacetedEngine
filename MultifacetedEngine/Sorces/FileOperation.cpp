@@ -1,8 +1,5 @@
 #include "FileOperation.h"
 
-//========================================
-//ƒfƒBƒŒƒNƒgƒŠ‚Ìî•ñæ“¾
-//========================================
 DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 	DIRECTORY_DATA* data;			//ƒtƒ@ƒCƒ‹”‚Æƒtƒ@ƒCƒ‹–¼
 	HANDLE hwnd;				//ƒnƒ“ƒhƒ‹
@@ -12,7 +9,7 @@ DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 	data->folderpath = _path;
 
 	//_path += "*.*";		//ƒƒCƒ‹ƒhƒJ[ƒhİ’è
-	string wild = _path + "*.*";
+	string wild = _path + TEXT("*.*");
 	hwnd = FindFirstFile(wild.c_str(), &find_data);		//æ“ªƒtƒ@ƒCƒ‹‚ğ’T‚·
 	if (hwnd == INVALID_HANDLE_VALUE) {
 		return nullptr;		//¸”s
@@ -21,7 +18,7 @@ DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 		string str = find_data.cFileName;
 		if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {		//ƒtƒ@ƒCƒ‹‚ªƒfƒBƒŒƒNƒgƒŠ‚Å‚ ‚ê‚Î 
 			//directory‚¾‚Á‚½ê‡‚Ìˆ—‚Í‚±‚±‚É‘‚­
-			if (str != "." && str != "..") {
+			if (str != TEXT(".") && str != TEXT("..")) {
 				data->foldernum++;		//ƒtƒHƒ‹ƒ_[”‹L˜^
 				data->foldername.resize(data->foldernum);		//—v‘f”•ÏX
 				data->foldername[data->foldernum - 1] = str;		//ƒtƒHƒ‹ƒ_–¼‹L˜^
@@ -48,7 +45,7 @@ DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 	if (data->foldernum > 0) {			//ƒtƒHƒ‹ƒ_‚ª‚ ‚ê‚Îˆ—
 		data->data.resize(data->foldernum);
 		for (int i = 0; i < data->foldernum; i++) {
-			data->data[i] = GetDirectoryData(_path + data->foldername[i] + "/");
+			data->data[i] = GetDirectoryData(_path + data->foldername[i] + TEXT("/"));
 		}
 
 	}
@@ -57,16 +54,10 @@ DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 	return data;		//ì¬‚µ‚½ƒf[ƒ^‚ğ“n‚·
 }
 
-//==============================
-//–³ğŒƒtƒHƒ‹ƒ_[‘”‚ğæ“¾
-//==============================
 int FileOperation::GetFolderSum(DIRECTORY_DATA* _data) {
 	return GetFolderSum(_data, F_FIND_MODE::FM_NONE);
 }
 
-//============================
-//ƒtƒHƒ‹ƒ_[‘”‚ğæ“¾
-//============================
 int FileOperation::GetFolderSum(DIRECTORY_DATA* _data, int _findmode) {
 	int cnt = 0;
 	
@@ -103,9 +94,6 @@ int FileOperation::GetFolderSum(DIRECTORY_DATA* _data, int _findmode) {
 	return cnt;
 }
 
-//=================================
-//ƒtƒ@ƒCƒ‹‘”‚ğæ“¾
-//=================================
 int FileOperation::GetFileSum(DIRECTORY_DATA* _data, string _findmode) {	//ğŒ•t‚«ƒfƒBƒŒƒNƒgƒŠ‚ÌƒtƒHƒ‹ƒ_”
 	int cnt = 0;
 
@@ -114,15 +102,12 @@ int FileOperation::GetFileSum(DIRECTORY_DATA* _data, string _findmode) {	//ğŒ•
 	}
 	cnt = _data->filenum;
 	for (int i = 0; i < _data->foldernum; i++) {
-		cnt += GetFileSum(_data->data[i], ".wav");
+		cnt += GetFileSum(_data->data[i], TEXT(".wav"));
 	}
 	
 	return cnt;		//Œ»İ‚ÌƒtƒHƒ‹ƒ_”‚ğ•Ô‚·
 }
 
-//===================================
-//ƒtƒHƒ‹ƒ_[ƒpƒX‚ğæ“¾
-//===================================
 vector<string> FileOperation::GetFolderPath(DIRECTORY_DATA* _data, int _findmode) {
 	vector<string> path;
 	vector<string> get;
@@ -167,16 +152,17 @@ vector<string> FileOperation::GetFolderPath(DIRECTORY_DATA* _data, int _findmode
 	return path;		//ƒtƒHƒ‹ƒ_ƒpƒX‚ğ“n‚·
 }
 
-//============================================
-//ƒtƒ@ƒCƒ‹–¼æ“¾
-//============================================
 vector<string> FileOperation::GetFileName(string filedata) {
 	vector<string> filename;
 	HANDLE hwnd;
 	WIN32_FIND_DATA find_data;
 
-	string wild = filedata + "*.*";
+	string wild = filedata + TEXT("*.*");
+#ifdef UNICODE
+	hwnd = FindFirstFile((LPCWSTR)wild.c_str(), &find_data);		//æ“ªƒtƒ@ƒCƒ‹‚ğ’T‚·
+#else
 	hwnd = FindFirstFile(wild.c_str(), &find_data);		//æ“ªƒtƒ@ƒCƒ‹‚ğ’T‚·
+#endif
 	if (hwnd == INVALID_HANDLE_VALUE) {
 		return filename;		//¸”s
 	}
