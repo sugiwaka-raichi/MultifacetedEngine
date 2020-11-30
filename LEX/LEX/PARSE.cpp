@@ -91,6 +91,7 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 		case TOKEN_TYPE::TT_CRLF:
 		case TOKEN_TYPE::TT_EBRACKET:
 		case TOKEN_TYPE::TT_EPAR:
+		case TOKEN_TYPE::TT_END:
 			return 13;
 		//演算子単位のトークンに入れかえる
 		//case TT_PLUS:
@@ -188,7 +189,7 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	//-----------------------------
 	case STACK_TYPE::ST_F:
 		switch (_in) {
-		case TT_STRING:
+		case TOKEN_TYPE::TT_STRING:
 			return 34;
 		default:
 			return -1;
@@ -198,19 +199,19 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	//-----------------------------
 	case STACK_TYPE::ST_Fd:
 		switch (_in) {
-		case TT_STRING:
+		case TOKEN_TYPE::TT_STRING:
 			return 35;
-		case TT_NUMBER:
+		case TOKEN_TYPE::TT_NUMBER:
 			return 36;
-		case TT_CRLF:
-		case TT_EBRACKET:
+		case TOKEN_TYPE::TT_CRLF:
+		case TOKEN_TYPE::TT_EBRACKET:
 			return 38;		//仮
-		case TT_SPACE:
+		case TOKEN_TYPE::TT_SPACE:
 			return 37;
-		case TT_OP:
-		case TT_EPAR:
+		case TOKEN_TYPE::TT_OP:
+		case TOKEN_TYPE::TT_EPAR:
 			return 38;
-		case TT_END:
+		case TOKEN_TYPE::TT_END:
 			return 38;		//仮
 		default:
 			return -1;
@@ -281,13 +282,13 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 void PARSE::Rules(int _rulenum) {
 	//STACK st;		//追加するスタックの情報を格納する変数
 	for (int i = 0; i < token_stack.size(); i++) {
-		cout << "取り除くトークン" << i << ":" << token_stack[i] << endl;
+		cout << "取り除くトークン" << i << ":" << (int)token_stack[i] << endl;
 	}
 	switch (_rulenum)
 	{
 	case 0:		//スタックと入力取り除き
 		if (token_stack.size() > 0 && input[0].type == token_stack.back()) {
-			cout << "取り除いたトークン:" << token_stack.back() << endl;
+			cout << "取り除いたトークン:" << (int)token_stack.back() << endl;
 			stack.erase(stack.begin());
 			input.erase(input.begin());
 			token_stack.pop_back();
@@ -295,11 +296,11 @@ void PARSE::Rules(int _rulenum) {
 		else {
 			//エラー
 			cout << "\033[31m";
-			cout << "不一致\n入力:" << input[0].type << "	スタック:" << token_stack.back() << endl;
+			cout << "不一致\n入力:" << (int)input[0].type << "	スタック:" << (int)token_stack.back() << endl;
 
 			getchar();
 			for (int i = 0; i < token_stack.size(); i++) {
-				cout << "スタック" << i << ":" << token_stack[i] << endl;
+				cout << "スタック" << i << ":" << (int)token_stack[i] << endl;
 			}
 			cout << "\033[m";
 
@@ -487,8 +488,9 @@ void PARSE::Rules(int _rulenum) {
 	case 38:	//38.F'→ε
 		stack.erase(stack.begin());
 		break;
-	case 39:	//39.A→(A')
-		stack[0] = STACK_TYPE::ST_TOKEN;
+	case 39:	//39.A→(A')E'
+		stack[0] = STACK_TYPE::ST_Ed;
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		stack.insert(stack.begin(), STACK_TYPE::ST_Ad);
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_EPAR);			// )
@@ -497,8 +499,8 @@ void PARSE::Rules(int _rulenum) {
 	case 40:	//40.A→ε
 		stack.erase(stack.begin());
 		break;
-	case 41:	//41.A→E
-		stack[0] = STACK_TYPE::ST_E;
+	case 41:	//41.A→E'
+		stack[0] = STACK_TYPE::ST_Ed;
 		break;
 	case 42:	//42.A'→ε 引数無し
 		stack.erase(stack.begin());
@@ -656,7 +658,7 @@ void PARSE::Analysis(vector<TOKEN> _tokenList) {
 		int rulesnum = RulesNum(stack[0], input[0].type);		//スタックとトークンの先頭を比べ適応すべきルールを取得する
 		if (rulesnum == -1) {
 			wcout << L"\033[31m";
-			cout << "ERROR" << input[0].type;
+			cout << "ERROR" << (int)input[0].type;
 			wcout << L"\033[m";
 
 			getchar();
@@ -673,7 +675,7 @@ void PARSE::Analysis(vector<TOKEN> _tokenList) {
 			//OutPut();
 			//cout << endl;
 		}
-		cout << stack[0] << "	" << input[0].type << "	" << rulesnum << "	";
+		cout << stack[0] << "	" << (int)input[0].type << "	" << rulesnum << "	";
 		OutPut();
 		cout << "\r\n";
 		Rules(rulesnum);		//解析表から取得したルール番号にあった処理を行う
