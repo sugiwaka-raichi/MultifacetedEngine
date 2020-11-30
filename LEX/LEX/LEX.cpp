@@ -144,7 +144,7 @@ void LEX::Analysis(string _str) {
 	}
 
 	//---------------------
-	//最終文字列を取得
+	//最終文字・数字を取得
 	//---------------------
 	if (strFlg) {
 		TOKEN tmp;
@@ -152,6 +152,14 @@ void LEX::Analysis(string _str) {
 		buff.clear();
 		tmp.type = TOKEN_TYPE::TT_STRING;
 		tokenList.push_back(tmp);
+	}
+	else if(number) {
+		number = false;
+		TOKEN tmp;
+		tmp.str = buff;		//情報をトークンとして記録
+		tmp.type = TOKEN_TYPE::TT_NUMBER;
+		buff.clear();		//クリア
+		tokenList.push_back(tmp);		//リストに記録
 	}
 }
 
@@ -209,7 +217,7 @@ bool LEX::Symbol(char _symbol) {
 //======================================
 //記号のトークン種別分類
 //======================================
-int LEX::JudgeSymbol(char _symbol)
+TOKEN_TYPE LEX::JudgeSymbol(char _symbol)
 {
 	switch (_symbol) {
 	case '	':		//HTAB
@@ -251,10 +259,8 @@ int LEX::JudgeSymbol(char _symbol)
 		return TOKEN_TYPE::TT_DOLL;
 	//case '!':
 	//	return TOKEN_TYPE::TT_NOT;
-	case '\r':
-		return -1;
-	default:
-		return -1;
+	//case '\r':
+	//default:
 	}
 }
 
