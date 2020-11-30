@@ -7,3 +7,5 @@
 MultifacetedEngine_Debug/
 Debug/
 Release/
+*.ilk
+*.rej

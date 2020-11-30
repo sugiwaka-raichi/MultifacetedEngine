@@ -7,6 +7,7 @@
 #include "ERROR.h"
 #include "SquarePolygon.h"
 #include "TextureManager.h"
+#include "TEXT.h"
 
 //==================================================
 //グローバル変数
@@ -18,6 +19,7 @@ LPD3DXFONT	g_pD3DXFont = nullptr;		//フォント
 //XAudio2 xaudio;
 SquarePolygon test(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,100,100);
 TextureManager TexManager;
+Text testText;
 
 bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen) {
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -100,7 +102,7 @@ bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen
 	test.SetV(1);
 	test.SetUP(1);
 	test.SetVP(1);
-
+	testText.InitText();
 	return true;
 }
 
@@ -136,7 +138,7 @@ void GameRender() {
 
 		//g_pD3DDevice->SetTexture(0, TextureManager::GetTexture("IMG_0914.PNG"));
 		test.DrawPolygon(TextureManager::GetTexture("IMG_0914.PNG"));
-
+		testText.TextDraw();
 		g_pD3DDevice->EndScene();
 	}
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);

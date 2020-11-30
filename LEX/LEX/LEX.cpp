@@ -18,18 +18,42 @@ LEX & LEX::GetInstance()
 //======================================
 void LEX::Analysis(string _str) {
 	str = _str;
-	str.push_back('\0');		//終末文字を登録
+	vector<TOKEN>().swap(tokenList);		//トークンリストを初期化
 	//-----------------------------------
 	//仮定フラグ群
 	//-----------------------------------
 	bool number = false;		//数値と仮定するかどうか
+	bool period = false;		//小数点が入ったかどうか
 	bool strFlg = false;		//文字列として扱っている
-
+	bool comment = false;		//コメントとして処理する
 	string buff;				//バッファ
 
 	//字句解析のメインループ
 
 	for (int i = 0; i < str.size(); i++) {
+		//\rは読み飛ばす
+		if (str[i] == '\r') {
+			continue;
+		}
+		//---------------------
+		//コメント部分の処理
+		//---------------------
+		if (str[i] == '/') {		//一回目の/
+			if (str.size() > 0) {	//次文字があれば
+				if (str[i + 1] == '/') {		//二回目の/
+					//これはコメントなので字句分割を行わない
+					comment = true;
+				}
+			}
+		}
+		//コメントフラグがたっていれば
+		if (comment) {
+			//改行されるまで読み飛ばす
+			if (str[i] == '\n') {
+				comment = false;		//改行されればコメントフラグをおってコメント終了
+			}
+			continue;
+		}
 
 		//7bitの範囲(ASCII CODE)
 #ifdef UNICODE
@@ -55,9 +79,14 @@ void LEX::Analysis(string _str) {
 				continue;
 			}
 			else if (str[i] == '.') {		//ピリオドであれば
-				if (number) {
+				if (number && !period) {
 					buff += str[i];
+					period = true;
 					continue;
+				}
+				else {						//ピリオドが二つ以上入ったとき数値として扱わない
+					number = false;
+					period = false;
 				}
 			}
 			else {
@@ -88,8 +117,17 @@ void LEX::Analysis(string _str) {
 			}
 
 		}
-		//ASCII codeの範囲から出るサイズの文字コード
+		//ASCII codeとその範囲から出るサイズの文字コード
 		strFlg = true;
+		if (number) {
+			//数値フラグがたっていれば
+			number = false;
+			TOKEN tmp;
+			tmp.str = buff;		//情報をトークンとして記録
+			tmp.type = TOKEN_TYPE::TT_NUMBER;
+			buff.clear();		//クリア
+			tokenList.push_back(tmp);		//リストに記録
+		}
 		buff += str[i];
 		if (i + 1 < str.size()) {
 			i++;
@@ -106,7 +144,7 @@ void LEX::Analysis(string _str) {
 	}
 
 	//---------------------
-	//最終文字列を取得
+	//最終文字・数字を取得
 	//---------------------
 	if (strFlg) {
 		TOKEN tmp;
@@ -114,6 +152,14 @@ void LEX::Analysis(string _str) {
 		buff.clear();
 		tmp.type = TOKEN_TYPE::TT_STRING;
 		tokenList.push_back(tmp);
+	}
+	else if(number) {
+		number = false;
+		TOKEN tmp;
+		tmp.str = buff;		//情報をトークンとして記録
+		tmp.type = TOKEN_TYPE::TT_NUMBER;
+		buff.clear();		//クリア
+		tokenList.push_back(tmp);		//リストに記録
 	}
 }
 
@@ -130,22 +176,6 @@ bool LEX::Symbol(char _symbol) {
 		break;
 	case '#':		//SHARP
 		break;
-	case '=':
-		break;
-	case '+':
-		break;
-	case '-':
-		break;
-	case '*':
-		break;
-	case '/':
-		break;
-	case '%':
-		break;
-	case '<':
-		break;
-	case '>':
-		break;
 	case '|':
 		break;
 	case '(':
@@ -158,8 +188,26 @@ bool LEX::Symbol(char _symbol) {
 		break;
 	case '$':
 		break;
-	case '!':
+	case '=':
+		//break;
+	case '+':
+		//break;
+	case '-':
+		//break;
+	case '*':
+		//break;
+	case '/':
+		//break;
+	case '%':
 		break;
+	case '\r':
+		return false;
+	//case '<':
+	//	break;
+	//case '>':
+	//	break;
+	//case '!':
+	//	break;
 	default:
 		return false;
 	}
@@ -169,7 +217,7 @@ bool LEX::Symbol(char _symbol) {
 //======================================
 //記号のトークン種別分類
 //======================================
-int LEX::JudgeSymbol(char _symbol)
+TOKEN_TYPE LEX::JudgeSymbol(char _symbol)
 {
 	switch (_symbol) {
 	case '	':		//HTAB
@@ -181,21 +229,22 @@ int LEX::JudgeSymbol(char _symbol)
 	case '#':		//SHARP
 		return TOKEN_TYPE::TT_SHARP;
 	case '=':
-		return TOKEN_TYPE::TT_EQUAL;
+		//return TOKEN_TYPE::TT_EQUAL;
 	case '+':
-		return TOKEN_TYPE::TT_PLUS;
+		//return TOKEN_TYPE::TT_PLUS;
 	case '-':
-		return TOKEN_TYPE::TT_MINUS;
+		//return TOKEN_TYPE::TT_MINUS;
 	case '*':
-		return TOKEN_TYPE::TT_ASTERISK;
+		//return TOKEN_TYPE::TT_ASTERISK;
 	case '/':
-		return TOKEN_TYPE::TT_SLASH;
+		//return TOKEN_TYPE::TT_SLASH;
 	case '%':
-		return TOKEN_TYPE::TT_PERCENT;
-	case '<':
-		return TOKEN_TYPE::TT_LESS;
-	case '>':
-		return TOKEN_TYPE::TT_GREATOR;
+		//return TOKEN_TYPE::TT_PERCENT;
+		return TOKEN_TYPE::TT_OP;
+	//case '<':
+	//	return TOKEN_TYPE::TT_LESS;
+	//case '>':
+	//	return TOKEN_TYPE::TT_GREATOR;
 	case '|':
 		return TOKEN_TYPE::TT_VBAR;
 	case '(':
@@ -208,10 +257,10 @@ int LEX::JudgeSymbol(char _symbol)
 		return TOKEN_TYPE::TT_EBRACKET;
 	case '$':
 		return TOKEN_TYPE::TT_DOLL;
-	case '!':
-		return TOKEN_TYPE::TT_NOT;
-	default:
-		return -1;
+	//case '!':
+	//	return TOKEN_TYPE::TT_NOT;
+	//case '\r':
+	//default:
 	}
 }
 
