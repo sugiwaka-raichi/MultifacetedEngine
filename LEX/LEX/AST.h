@@ -8,16 +8,19 @@ enum class NODE {
 	Null,		//
 	STRING,		//
 	NUMBER,		//
+	VARIABLE,	//
+	SHARP,		//
+	OP,			// 演算子ノード
+
+	//---------------------
+	//解析木（？）
+	VBAR,		//
+	DOLL,		//
+	TAB,		//
 	SPAR,		//
 	EPAR,		//
 	SBRACKET,	//
 	EBRACKET,	//
-	VBAR,		//
-	DOLL,		//
-	VARIABLE,	//
-	SHARP,		//
-	TAB,		//
-	OP,			// 演算子ノード
 };
 
 //==============================
@@ -34,8 +37,9 @@ public:
 //数値ノード
 //=================================
 class NODE_NUMBER:public AST {
-public:
+private:
 	int value;
+public:
 	virtual NODE GetNodeType() {
 		return NODE::NUMBER;
 	}
@@ -47,8 +51,9 @@ public:
 //変数ノード
 //=================================
 class NODE_VARIABLE :public AST {
-public:
+private:
 	string varName;		//変数名
+public:
 	virtual NODE GetNodeType() {
 		return NODE::VARIABLE;
 	}
@@ -58,10 +63,11 @@ public:
 //演算子ノード
 //=================================
 class NODE_OP :public AST {
-public:
+private:
 	string op;		//演算子
 	AST *left;		//左辺のノード
 	AST *right;		//右辺のノード
+public:
 	virtual NODE GetNodeType() { return NODE::OP; }
 
 	NODE_OP(string _op, AST *_left, AST *_right) :
@@ -71,3 +77,22 @@ public:
 //====================================
 //関数ノード
 //====================================
+class NODE_FUNC :public AST {
+private:
+	string funcName;			//関数名
+	vector<AST*> childNode;		//子ノード(引数)
+public:
+
+};
+
+//====================================
+//引数ノード
+//====================================
+class NODE_ARGUMENT :public AST {
+private:
+	vector<AST*> childNode;		//子ノード
+public:
+
+};
+
+
