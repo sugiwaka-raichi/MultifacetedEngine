@@ -106,11 +106,17 @@ void SquarePolygon::CreateVertex() {
 	}
 }
 
-//描画(保持テクスチャ)
+//描画(テクスチャなし)
 void SquarePolygon::DrawPolygon() {
 	CreateVertex();
-	//テクスチャなし描画
-	GetDevice()->SetTexture(0, *tex);
+	if (tex == nullptr) {
+		//テクスチャ無描画
+		GetDevice()->SetTexture(0, nullptr);
+	}
+	else {
+		//テクスチャ有描画
+		GetDevice()->SetTexture(0, *tex);
+	}
 	GetDevice()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VERTEX_2D));
 }
 
@@ -128,6 +134,22 @@ void SquarePolygon::DrawPolygon(LPDIRECT3DTEXTURE9 texture) {
 	//テクスチャ付き描画
 	GetDevice()->SetTexture(0, texture);
 	GetDevice()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VERTEX_2D));
+}
+
+void SquarePolygon::Init()
+{
+}
+
+void SquarePolygon::Draw() {
+	DrawPolygon();
+}
+
+void SquarePolygon::Update()
+{
+}
+
+void SquarePolygon::UnInit()
+{
 }
 
 //====================================================
@@ -179,6 +201,12 @@ void SquarePolygon::SetTag(char* _tag) {
 
 void SquarePolygon::SetTexture(LPDIRECT3DTEXTURE9* p_tex) {
 	tex = p_tex;		//テクスチャポインタ保持
+}
+
+void SquarePolygon::SetColor(D3DCOLOR _color) {
+	for (int i = 0; i < 4; i++) {
+		vertex[i].col = _color;
+	}
 }
 
 //================================================

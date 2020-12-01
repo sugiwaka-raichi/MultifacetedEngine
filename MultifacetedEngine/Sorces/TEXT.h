@@ -1,13 +1,16 @@
 #pragma once
-#include "game.h"
+#include "Font.h"
 
-enum TextMode {
+enum TextPosMode {
 	TM_CENTER,
 	TM_LEFT,
 	TM_RIGHT
 };
 
-class Text
+//==============================
+//テキストクラス
+//==============================
+class Text:public OBJECT
 {
 protected:
 	int size_width, size_height;
@@ -16,7 +19,8 @@ protected:
 	int Red, Green, Blue;
 	int mode;		//表示位置モード
 public:
-	LPD3DXFONT font;		//フォント
+	//LPD3DXFONT font;		//フォント
+	Font* font;
 	Text();					//Default設定のコンストラクタのコンストラクタ
 	//Text(int font_width, int font_height, int r, int g, int b);	//個別設定
 
@@ -28,11 +32,11 @@ public:
 	//=====================================
 	//変更処理
 	//=====================================
-	void ChangeFontSize(int, int);
 	void ChangeTextPosition(int left, int top, int right, int bottom);
 	void ChangeTextPositionAdd(float left, float top, float right, float bottom);
 	void ChangeText(string);
 	void ChangeColor(int r, int g, int b);
+	void ChangeFontSize(int, int);
 
 	//テキスト描画
 	void TextDraw();
@@ -43,6 +47,16 @@ public:
 	void TextCenter();
 	void TextLeft();
 	void TextRight();
+
+	void SetFont(Font* _font);
+
+	//-----------------------------------
+	//オーバーライド
+	//-----------------------------------
+	void Init();
+	void Draw();
+	void Update();
+	void UnInit();
 
 };
 

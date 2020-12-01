@@ -24,6 +24,6 @@ public:
 	//bool TextureFilePath();		//テクスチャファイルのファイルパス取得(後にスクリプトファイルの情報から行うため不要?)
 	static bool TextureLoad(string texturename);		//テクスチャ読込
 	static void DeleteTexture(string texturename);		//テクスチャ開放
-	static LPDIRECT3DTEXTURE9 GetTexture(string texturename);	//テクスチャゲッター
+	static LPDIRECT3DTEXTURE9* GetTexture(string texturename);	//テクスチャゲッター
 	static void SetDirectory(string directory);		//ディレクトリ設定
 };

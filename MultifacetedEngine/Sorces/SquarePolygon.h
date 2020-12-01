@@ -1,7 +1,7 @@
 #pragma once
 #include "game.h"
 
-class SquarePolygon
+class SquarePolygon:public OBJECT
 {
 private:
 protected:
@@ -21,9 +21,8 @@ protected:
 	float u, v;		//テクスチャ表示範囲
 	int up, vp;		//テクスチャ表示位置
 	float angle;	//回転角
-	int layer;		//レイヤー　表示順決定に使う
-	bool show_flag;	//表示フラグ
-	LPDIRECT3DTEXTURE9*	tex;		//テクスチャポインタ
+
+	LPDIRECT3DTEXTURE9*	tex = nullptr;		//テクスチャポインタ
 	char* tag;						//外部参照用オブジェクト名
 
 	void CreateVertex();		//頂点情報の作成
@@ -34,13 +33,21 @@ public:
 	~SquarePolygon();		//デストラクタ
 	void CreatePolygon(float get_x,float get_y,float get_w,float get_h);	//ポリゴンの作成
 	void CreatePolygon(float get_x,float get_y,float get_w,float get_h, float get_angle);	//ポリゴンの作成回転付き
-	void RelativeX(float _x);			//相対移動X
-	void RelativeY(float _y);			//相対移動Y
+	void RelativeX(float _x);			//絶対値移動X
+	void RelativeY(float _y);			//絶対値移動Y
 	void DirectionMove(float _amount);	//方向移動
 	void DirectionMove(float _amount, float _angle);	//方向移動
 	void DrawPolygon();		//描画
 	void DrawPolygon(LPDIRECT3DTEXTURE9* texture);		//描画
 	void DrawPolygon(LPDIRECT3DTEXTURE9 texture);		//テクスチャ指定描画
+
+	//-----------------------------------
+	//オーバーライド
+	//-----------------------------------
+	void Init();
+	void Draw();
+	void Update();
+	void UnInit();
 
 	//-----------------------------------
 	//セッター
@@ -57,6 +64,7 @@ public:
 	void SetLayer(int _layer);
 	void SetTag(char* tag);
 	void SetTexture(LPDIRECT3DTEXTURE9* p_tex);
+	void SetColor(D3DCOLOR _color);
 
 	//-----------------------------------
 	//ゲッター

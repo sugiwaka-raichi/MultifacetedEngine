@@ -3,11 +3,11 @@
 
 
 
-class Button:SquarePolygon {
+class Button:public SquarePolygon {
 private:
 protected:
 public:
-	bool PushKey(int m_key);
+	bool PushKey(MOUSE_KEYTYPE m_key);
 	bool OnCursor();
 };
 

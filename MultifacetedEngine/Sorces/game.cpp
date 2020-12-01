@@ -8,23 +8,20 @@
 #include "SquarePolygon.h"
 #include "TextureManager.h"
 #include "TEXT.h"
+#include "Button.h"
 
 //==================================================
 //グローバル変数
 //==================================================
 LPDIRECT3D9 g_pD3D = NULL;
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;
-LPD3DXFONT	g_pD3DXFont = nullptr;		//フォント
-//DirectInput xinput;
-//XAudio2 xaudio;
 SquarePolygon test(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,100,100);
 TextureManager TexManager;
-<<<<<<< HEAD
-Text testText;
-=======
-Text testtex;
 
->>>>>>> dev_/Update
+Text testtex;
+Button button;
+
+vector<OBJECT*> stack;			//オブジェクトを実行するための箱
 
 bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen) {
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -93,13 +90,13 @@ bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen
 	g_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	g_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-	//フォント作成
-	D3DXCreateFont(g_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, TEXT("Terminal"), &g_pD3DXFont);
 	InitInput(hinst, hWnd);
-	/*xaudio.*/InitSound();
+	InitSound();
+
 	LoadWave(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"), true);
 	TextureManager::FileDataInit();
-	TextureManager::TextureLoad(TEXT("IMG_0914.PNG"));
+	TextureManager::TextureLoad(TEXT("IMG_0914.PNG"));		//テクスチャ読み込み
+	test.SetTexture(TextureManager::GetTexture(TEXT("IMG_0914.PNG")));
 	testtex.InitText();
 
 	//テスト
@@ -107,11 +104,21 @@ bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen
 	test.SetV(1);
 	test.SetUP(1);
 	test.SetVP(1);
-	testText.InitText();
+	testtex.InitText();
+	button.CreatePolygon(100, 100, 100, 100);
+
+	stack.push_back(&button);
+	stack.push_back(&test);
+	stack.push_back(&testtex);
 	return true;
 }
 
 void GameUpdate() {
+	//-----------------------------
+	//実行命令
+	//-----------------------------
+	
+
 	//#####################
 	//test
 	//#####################
@@ -132,12 +139,30 @@ void GameUpdate() {
 		StopSound(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"));
 	}
 	testtex.ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (GetMousePress(MOUSE_KEYTYPE::BACK)) {
+		testtex.ChangeText(L"back");	//back
+	}
 	if (GetMousePress(MOUSE_KEYTYPE::FORWARD)) {
-		testtex.ChangeText(TEXT("back"));	//back
+		testtex.ChangeText(L"forward"); //fo
 	}
-	if (GetMousePress(4)) {
-		testtex.ChangeText(TEXT("forward")); //fo
+
+	if (GetMousePress(MOUSE_KEYTYPE::LEFT)) {
+		testtex.ChangeText(to_wstring(GetMouseScreenX()) + L":" + to_wstring(GetMouseScreenY()));
 	}
+
+	if (button.OnCursor()) {
+		button.SetColor(D3DCOLOR_RGBA(255,0,0,255));
+		if (button.PushKey(MOUSE_KEYTYPE::LEFT)) {
+			button.SetColor(D3DCOLOR_RGBA(0, 255, 0, 255));
+			testtex.ChangeText(L"わふ");
+		}
+	}
+	else {
+		button.SetColor(D3DCOLOR_RGBA(255, 255, 255, 255));
+	}
+	//########################
+	//End test
+	//########################
 }
 
 void GameRender() {
@@ -148,13 +173,13 @@ void GameRender() {
 		g_pD3DDevice->SetFVF(FVF_VERTEX_2D);
 
 		//g_pD3DDevice->SetTexture(0, TextureManager::GetTexture("IMG_0914.PNG"));
-<<<<<<< HEAD
-		test.DrawPolygon(TextureManager::GetTexture("IMG_0914.PNG"));
-		testText.TextDraw();
-=======
-		test.DrawPolygon(TextureManager::GetTexture(TEXT("IMG_0914.PNG")));
-		testtex.TextDraw();
->>>>>>> dev_/Update
+		//button.DrawPolygon();
+		//test.DrawPolygon(TextureManager::GetTexture(TEXT("IMG_0914.PNG")));
+		//testtex.TextDraw();
+		for (int i = 0; i < stack.size(); i++) {
+			stack[i]->Draw();		//スタックにある描画するオブジェクトを順に描画
+		}
+
 		g_pD3DDevice->EndScene();
 	}
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);

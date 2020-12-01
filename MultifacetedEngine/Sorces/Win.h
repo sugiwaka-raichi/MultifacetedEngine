@@ -47,7 +47,10 @@ using namespace std;
 #define string string		//マルチバイトstring
 #define LPCSTR LPCSTR		//マルチバイトLPSTR
 #endif
+
 #define FULLSCREEN 	false				//フルスクリーンﾌﾗｸﾞ
+#define WINDOWSTYLE WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX	//ウィンドウサイズの変更を禁止したスタイル
+//#define WINDOWSTYLE WS_OVERLAPPEDWINDOW									//ウィンドウサイズの変更が可能なスタイル
 
 #define FVF_VERTEX_2D (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 

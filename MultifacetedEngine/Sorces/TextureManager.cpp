@@ -100,12 +100,12 @@ void TextureManager::DeleteTexture(string filename) {
 //---------------------------------------------------------------------
 //指定されたファイル名のテクスチャを渡す
 //---------------------------------------------------------------------
-LPDIRECT3DTEXTURE9 TextureManager::GetTexture(string texturename) {
+LPDIRECT3DTEXTURE9* TextureManager::GetTexture(string texturename) {
 	for (int i = 0; i < texture_data.filedata->filenum; i++) {
 		//対象のファイル名か判断し、かつロードされているか
 		if (texturename == texture_data.filedata->filename[i]) {
 			if (texture_data.loadflag[i]) {
-				return texture_data.texture[i];
+				return &texture_data.texture[i];
 			}
 			break;
 		}

@@ -9,17 +9,10 @@
 #define DIRECTINPUT_VERSION 0x0800
 
 #include <dinput.h>
+#include <vector>
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dinput8.lib")
 
-<<<<<<< HEAD
-enum MOUSE_KEYTYPE {
-	LEFT = 0,
-	RIGHT,
-	CENTER,
-	FORWARD,
-};
-=======
 typedef enum {
 	LEFT,
 	RIGHT,
@@ -27,7 +20,6 @@ typedef enum {
 	BACK,
 	FORWARD
 }MOUSE_KEYTYPE;
->>>>>>> dev_/Update
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -59,4 +51,5 @@ BYTE GetMousePress(int);				//取得データ制限
 DIMOUSESTATE2 GetMouseTrigger(void);	//MOUSEクリック状況(押されたか）
 BYTE GetMouseTrigger(int);				//取得データ制限
 
+vector<BYTE*> GetKeyDate();				//入力キーを取得
 //#endif

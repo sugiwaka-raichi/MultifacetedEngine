@@ -1,22 +1,33 @@
 #include "Button.h"
 #include "input.h"
 
-bool Button::PushKey(int m_key) {
+bool Button::OnClick(MOUSE_KEYTYPE m_key) {
 	if (OnCursor()) {
 		switch (m_key) {
 		case MOUSE_KEYTYPE::LEFT:
-			if (GetMouseLeftPress) {
+			if (GetMousePress(MOUSE_KEYTYPE::LEFT)){
 				return true;
 			}
 			break;
 		case MOUSE_KEYTYPE::RIGHT:
-			return true;
+			if (GetMousePress(MOUSE_KEYTYPE::RIGHT)) {
+				return true;
+			}
 			break;
 		case MOUSE_KEYTYPE::CENTER:
-			return true;
+			if (GetMousePress(MOUSE_KEYTYPE::CENTER)) {
+				return true;
+			}
 			break;
 		case MOUSE_KEYTYPE::FORWARD:
-			return true;
+			if (GetMousePress(MOUSE_KEYTYPE::FORWARD)) {
+				return true;
+			}
+			break;
+		case MOUSE_KEYTYPE::BACK:
+			if (GetMousePress(MOUSE_KEYTYPE::BACK)) {
+				return true;
+			}
 			break;
 		default:
 			break;
@@ -29,8 +40,8 @@ bool Button::OnCursor() {
 	float CursorX, CursorY;
 	CursorX = GetMouseX();
 	CursorY = GetMouseY();
-	if (CursorX >= x && CursorX < x + w) {
-		if (CursorY >= y && CursorY < y + h) {
+	if (CursorX >= x - w / 2 && CursorX < x + w / 2) {
+		if (CursorY >= y - h / 2 && CursorY < y + h / 2) {
 			return true;
 		}
 	}

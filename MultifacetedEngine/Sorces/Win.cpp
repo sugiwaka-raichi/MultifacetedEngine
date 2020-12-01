@@ -78,7 +78,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		hWnd = CreateWindowEx(0,				//拡張ウィンドウスタイル
 			CLASS_NAME,						//ウィンドウクラスの名前
 			WINDOW_NAME,					//タイトル
-			WS_OVERLAPPEDWINDOW,			//ウィンドウスタイル
+			WINDOWSTYLE,					//ウィンドウスタイル 
 			CW_USEDEFAULT,					//ウィンドウの左上X座標
 			CW_USEDEFAULT,					//ウィンドウの左上Y座標
 			window_width,					//ウィンドウの幅
