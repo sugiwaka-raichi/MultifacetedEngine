@@ -152,7 +152,7 @@ void GameUpdate() {
 
 	if (button.OnCursor()) {
 		button.SetColor(D3DCOLOR_RGBA(255,0,0,255));
-		if (button.PushKey(MOUSE_KEYTYPE::LEFT)) {
+		if (button.OnClick(MOUSE_KEYTYPE::LEFT)) {
 			button.SetColor(D3DCOLOR_RGBA(0, 255, 0, 255));
 			testtex.ChangeText(L"‚í‚Ó");
 		}
