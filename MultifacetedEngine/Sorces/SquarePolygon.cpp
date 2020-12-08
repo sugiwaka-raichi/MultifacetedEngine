@@ -13,6 +13,7 @@ SquarePolygon::SquarePolygon(float get_x, float get_y, float get_w, float get_h)
 	tex = nullptr;		//テクスチャポインタにnull
 	//初期化処理
 	CreatePolygon(get_x, get_y, get_w, get_h);
+	u = v = 1.0f;			//初期値テクスチャ全表示
 }
 
 //デストラクタ
@@ -55,18 +56,18 @@ void SquarePolygon::CreateVertex() {
 
 	vertex[1].x = x + w / 2;
 	vertex[1].y = y - h / 2;
-	vertex[1].u = u * (up + 1);
+	vertex[1].u = u * (up + 1.0f);
 	vertex[1].v = v * vp;
 
 	vertex[2].x = x - w / 2;
 	vertex[2].y = y + h / 2;
 	vertex[2].u = u * up;
-	vertex[2].v = v * (vp + 1);
+	vertex[2].v = v * (vp + 1.0f);
 
 	vertex[3].x = x + w / 2;
 	vertex[3].y = y + h / 2;
-	vertex[3].u = u * (up + 1);
-	vertex[3].v = v * (vp + 1);
+	vertex[3].u = u * (up + 1.0f);
+	vertex[3].v = v * (vp + 1.0f);
 	
 	/*
 	vertex[0].x = x;
@@ -234,6 +235,16 @@ float SquarePolygon::GetU() {
 
 float SquarePolygon::GetV() {
 	return v;
+}
+
+RECT SquarePolygon::GetRect()
+{
+	RECT rect;
+	rect.left = x - w / 2;
+	rect.top = y - h / 2;
+	rect.right = x + w / 2;
+	rect.bottom = y + h / 2;
+	return rect;
 }
 
 int SquarePolygon::GetUP() {
