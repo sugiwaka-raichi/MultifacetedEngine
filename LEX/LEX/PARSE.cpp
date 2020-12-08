@@ -112,9 +112,9 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_T:
 		switch (_in) {
 		case TOKEN_TYPE::TT_STRING:
-			return 20;
-		case TOKEN_TYPE::TT_NUMBER:
 			return 21;
+		case TOKEN_TYPE::TT_NUMBER:
+			return 22;
 		}
 	//-----------------------------
 	//スタックT' (文字列/数値)
@@ -122,33 +122,33 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_Td:
 		switch (_in) {
 		case TOKEN_TYPE::TT_NUMBER:
-			return 23;
+			return 24;
 		case TOKEN_TYPE::TT_STRING:
-			return 22;
+			return 23;
 		case TOKEN_TYPE::TT_CRLF:
-			return 24;		//仮
+			return 25;		//仮
 		case TOKEN_TYPE::TT_TAB:		//文字列終了
-			return 24;
-		case TOKEN_TYPE::TT_SPACE:
 			return 25;
-		case TOKEN_TYPE::TT_SHARP:
+		case TOKEN_TYPE::TT_SPACE:
 			return 26;
-		case TOKEN_TYPE::TT_SPAR:
+		case TOKEN_TYPE::TT_SHARP:
 			return 27;
-		case TOKEN_TYPE::TT_EPAR:
+		case TOKEN_TYPE::TT_SPAR:
 			return 28;
-		case TOKEN_TYPE::TT_SBRACKET:
+		case TOKEN_TYPE::TT_EPAR:
 			return 29;
-		case TOKEN_TYPE::TT_EBRACKET:
+		case TOKEN_TYPE::TT_SBRACKET:
 			return 30;
-		case TOKEN_TYPE::TT_VBAR:
+		case TOKEN_TYPE::TT_EBRACKET:
 			return 31;
-		case TOKEN_TYPE::TT_DOLL:
+		case TOKEN_TYPE::TT_VBAR:
 			return 32;
-		case TOKEN_TYPE::TT_OP:
+		case TOKEN_TYPE::TT_DOLL:
 			return 33;
+		case TOKEN_TYPE::TT_OP:
+			return 34;
 		case TOKEN_TYPE::TT_END:
-			return 24;
+			return 25;
 		default:
 			return -1;
 		}
@@ -165,6 +165,12 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 		//case TT_PERCENT:
 		case TOKEN_TYPE::TT_OP:
 			return 16;
+		case TOKEN_TYPE::TT_DOLL:
+		case TOKEN_TYPE::TT_VBAR:
+		case TOKEN_TYPE::TT_NUMBER:
+		case TOKEN_TYPE::TT_SBRACKET:
+		case TOKEN_TYPE::TT_SPAR:
+			return 17;
 		default:
 			break;
 		}
@@ -174,11 +180,11 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_V:
 		switch (_in) {
 		case TOKEN_TYPE::TT_NUMBER:
-			return 19;
+			return 20;
 		case TOKEN_TYPE::TT_VBAR:
-			return 18;
+			return 19;
 		case TOKEN_TYPE::TT_DOLL:
-			return 17;
+			return 18;
 		case TOKEN_TYPE::TT_END:
 			//return 4;			//本来はV→εを呼ぶ
 		default:
@@ -190,7 +196,7 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_F:
 		switch (_in) {
 		case TOKEN_TYPE::TT_STRING:
-			return 34;
+			return 35;
 		default:
 			return -1;
 		}
@@ -200,19 +206,17 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_Fd:
 		switch (_in) {
 		case TOKEN_TYPE::TT_STRING:
-			return 35;
-		case TOKEN_TYPE::TT_NUMBER:
 			return 36;
+		case TOKEN_TYPE::TT_NUMBER:
+			return 37;
+		case TOKEN_TYPE::TT_SPACE:
+			return 38;
 		case TOKEN_TYPE::TT_CRLF:
 		case TOKEN_TYPE::TT_EBRACKET:
-			return 38;		//仮
-		case TOKEN_TYPE::TT_SPACE:
-			return 37;
 		case TOKEN_TYPE::TT_OP:
 		case TOKEN_TYPE::TT_EPAR:
-			return 38;
 		case TOKEN_TYPE::TT_END:
-			return 38;		//仮
+			return 39;		//仮
 		default:
 			return -1;
 		}
@@ -222,9 +226,6 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_A:
 		switch (_in) {
 		case TOKEN_TYPE::TT_SPAR:
-			return 39;
-		case TOKEN_TYPE::TT_CRLF:
-		//case TOKEN_TYPE::TT_EPAR:
 			return 40;
 		case TOKEN_TYPE::TT_STRING:
 		case TOKEN_TYPE::TT_NUMBER:
@@ -233,9 +234,12 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 		case TOKEN_TYPE::TT_SBRACKET:
 		case TOKEN_TYPE::TT_VBAR:
 		case TOKEN_TYPE::TT_DOLL:
-			return 41;
+			return 42;
+		case TOKEN_TYPE::TT_CRLF:
 		case TOKEN_TYPE::TT_END:
-			return 40;
+			return 41;
+		case TOKEN_TYPE::TT_OP:
+			return 43;
 		default:
 			return -1;
 		}
@@ -245,19 +249,19 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_Ad:
 		switch (_in) {
 		case TOKEN_TYPE::TT_EPAR:
-			return 42;
+			return 44;
 		case TOKEN_TYPE::TT_DOLL:
 		case TOKEN_TYPE::TT_VBAR:
 		case TOKEN_TYPE::TT_NUMBER:
-			return 43;
-		case TOKEN_TYPE::TT_STRING:
-			return 44;
-		case TOKEN_TYPE::TT_SPACE:
 			return 45;
-		case TOKEN_TYPE::TT_SBRACKET:
-			return 47;
-		case TOKEN_TYPE::TT_OP:
+		case TOKEN_TYPE::TT_STRING:
 			return 46;
+		case TOKEN_TYPE::TT_SPACE:
+			return 47;
+		case TOKEN_TYPE::TT_SBRACKET:
+			return 49;
+		case TOKEN_TYPE::TT_OP:
+			return 48;
 		default:
 			return -1;
 		}
@@ -383,112 +387,114 @@ void PARSE::Rules(int _rulenum) {
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//演算子
 		token_stack.push_back(TOKEN_TYPE::TT_OP);			//演算子
 		break;
-	case 17:	//17.V→$F		//変数
+	case 17:	//17.O→EO
+		stack.insert(stack.begin(), STACK_TYPE::ST_E);		//空白無しの式
+	case 18:	//18.V→$F		//変数
 		stack[0] = ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_DOLL);				// $
 		break;
-	case 18:	//18.V→|F		//変数
+	case 19:	//19.V→|F		//変数
 		stack[0] = ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_VBAR);				// |
 		break;
-	case 19:	//19.V→num		//数値
+	case 20:	//20.V→num		//数値
 		stack[0] = STACK_TYPE::ST_TOKEN;
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
 		break;
-	case 20:	//20.T→strT'
+	case 21:	//21.T→strT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
 		break;
-	case 21:	//21.T→numT'
+	case 22:	//22.T→numT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
 		break;
-	case 22:	//22.T'→strT'
+	case 23:	//23.T'→strT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
 		break;
-	case 23:	//23.T'→numT'
+	case 24:	//24.T'→numT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
 		break;
-	case 24:	//24.T'→ε
+	case 25:	//25.T'→ε
 		stack.erase(stack.begin());
 		break;
-	case 25:	//25.T'→spε
+	case 26:	//26.T'→spε
 		//stack.erase(stack.begin());
 		stack[0] = STACK_TYPE::ST_TOKEN;		
 		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
 		break;
-	case 26:	//26.T'→#T'
+	case 27:	//27.T'→#T'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_SHARP);			// #をトークンスタックに
 		break;
-	case 27:	//27.T'→(T'
+	case 28:	//28.T'→(T'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_SPAR);			// (をトークンスタックに
 		break;
-	case 28:	//28.T'→)T'
+	case 29:	//29.T'→)T'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_EPAR);			// )をトークンスタックに
 		break;
-	case 29:	//29.T'→[T'
+	case 30:	//30.T'→[T'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_SBRACKET);			// [をトークンスタックに
 		break;
-	case 30:	//30.T'→]T'
+	case 31:	//31.T'→]T'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_EBRACKET);			// ]をトークンスタックに
 		break;
-	case 31:	//31.T'→|T'
+	case 32:	//32.T'→|T'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_VBAR);			// |をトークンスタックに
 		break;
-	case 32:	//32.T'→$T'
+	case 33:	//33.T'→$T'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_DOLL);			// $をトークンスタックに
 		break;
-	case 33:	//33.T'→opT'
+	case 34:	//34.T'→opT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_OP);			// 演算子をトークンスタックに
 		break;
-	case 34:	//34.F→strF'
+	case 35:	//35.F→strF'
 		stack[0] = STACK_TYPE::ST_Fd;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
 		break;
-	case 35:	//26.F'→strF'
+	case 36:	//36.F'→strF'
 		stack[0] = STACK_TYPE::ST_Fd;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
 		break;
-	case 36:	//27.F'→numF'
+	case 37:	//37.F'→numF'
 		stack[0] = STACK_TYPE::ST_Fd;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
 		break;
-	case 37:	//28.F'→spε
+	case 38:	//38.F'→spε
 		stack.erase(stack.begin());
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_SPACE);			// SPACE
 		break;
-	case 38:	//38.F'→ε
+	case 39:	//39.F'→ε
 		stack.erase(stack.begin());
 		break;
-	case 39:	//39.A→(A')E'
+	case 40:	//40.A→(A')E'
 		stack[0] = STACK_TYPE::ST_Ed;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		stack.insert(stack.begin(), STACK_TYPE::ST_Ad);
@@ -496,34 +502,39 @@ void PARSE::Rules(int _rulenum) {
 		token_stack.push_back(TOKEN_TYPE::TT_EPAR);			// )
 		token_stack.push_back(TOKEN_TYPE::TT_SPAR);			// (
 		break;
-	case 40:	//40.A→ε
+	case 41:	//41.A→ε
 		stack.erase(stack.begin());
 		break;
-	case 41:	//41.A→E'
+	case 42:	//42.A→E'
 		stack[0] = STACK_TYPE::ST_Ed;
 		break;
-	case 42:	//42.A'→ε 引数無し
+	case 43:	//43.A→opE
+		stack[0] = ST_E;
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
+		token_stack.push_back(TOKEN_TYPE::TT_OP);
+		break;
+	case 44:	//44.A'→ε 引数無し
 		stack.erase(stack.begin());
 		break;
-	case 43:	//43.A'→VA'  変数または数値
+	case 45:	//45.A'→VA'  変数または数値
 		stack[0] = STACK_TYPE::ST_Ad;
 		stack.insert(stack.begin(), STACK_TYPE::ST_V);
 		break;
-	case 44:	//44.A'→TA'	文字列
+	case 46:	//46.A'→TA'	文字列
 		stack[0] = STACK_TYPE::ST_Ad;
 		stack.insert(stack.begin(), STACK_TYPE::ST_T);
 		break;
-	case 45:	//45.A'→spA'
+	case 47:	//47.A'→spA'
 		stack[0] = STACK_TYPE::ST_Ad;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_SPACE);			// SPACE
 		break;
-	case 46:	//46.A'→opA'
+	case 48:	//48.A'→opA'
 		stack[0] = STACK_TYPE::ST_Ad;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_OP);			// OP
 		break;
-	case 47:	//47.A'→[F]AA'
+	case 49:	//49.A'→[F]AA'
 		stack[0] = ST_Ad;							// A'
 		stack.insert(stack.begin(), STACK_TYPE::ST_A);			// A
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// ]
