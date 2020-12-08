@@ -9,27 +9,29 @@ Text::Text() {
 }
 
 bool Text::InitText() {
+	time = 0;
 	if (font == nullptr) {
 		font = new Font;
 	}
 	font->ChangeFontSize(14, 14);
 	TCreateFont();
 	ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-	ChangeText(TEXT("No Text"));
+	ChangeText(L"No Text");
 	ChangeColor(255, 255, 255);
 	TextLeft();
 	return true;
 }
 
 bool Text::InitText(int font_width, int font_height, int r, int g, int b) {
+	time = 0;
 	if (font == nullptr) {
 		font = new Font;			//フォントの作成
 	}
-	font->ChangeFontSize(font_width, font_height);
-	ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-	ChangeText(L"No Text");
-	ChangeColor(r, g, b);
-	TextLeft();
+	font->ChangeFontSize(font_width, font_height);				//フォントサイズ変更
+	ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);		//ウィンドウ全体表示エリア
+	ChangeText(L"No Text");	//デフォルトテキスト
+	ChangeColor(r, g, b);	//文字色指定
+	TextLeft();				//左寄せ
 	return true;
 }
 
@@ -42,7 +44,7 @@ Text::~Text() {
 }
 
 //==================================================
-//フォント作成作成
+//フォント作成 ※必要性......
 //==================================================
 void Text::TCreateFont() {
 	////フォント設定
@@ -60,6 +62,28 @@ void Text::TCreateFont() {
 	//	TEXT("ＭＳ　Ｐゴシック"),	// フォント名
 	//	&font);						// ID3DXFontポインタ
 	font->FCreateFont();
+}
+
+//===================================================
+//バッファ内の文字を全表示
+//===================================================
+bool Text::AllDispText() {
+	if (buff.size() > 0) {		//バッファにデータがあれば
+		//time = 0;		//カウントを強制終了する
+		text += buff.substr(0, buff.size());	//全表示
+		buff.clear();	//バッファを削除
+		return true;	//実行ができた
+	}
+	else {		//なければ
+		return false;	//できなかった(バッファがない)
+	}
+}
+
+//===================================
+//ウェイトの設定
+//===================================
+void Text::SetWait(float _time) {
+	wait = _time;
 }
 
 //=====================================================
@@ -90,11 +114,22 @@ void Text::ChangeTextPosition(int left, int top, int right, int bottom) {
 	rect = { left, top, right, bottom };
 }
 
+void Text::ChangeTextPosition(RECT _rect) {
+	rect = _rect;
+}
+
 void Text::ChangeTextPositionAdd(float left, float top, float right, float bottom) {
 	rect.left += left;
 	rect.top += top;
 	rect.right += right;
 	rect.bottom += bottom;
+}
+
+void Text::ChangeTextPositionAdd(float _x, float _y) {
+	rect.left += _x;
+	rect.right += _x;
+	rect.top += _y;
+	rect.bottom += _y;
 }
 
 //===========================================================
@@ -133,6 +168,22 @@ void Text::ChangeText(string t) {
 }
 
 //=========================================
+//バッファと表示タイミングの変更
+//=========================================
+void Text::ChangeText(float _time, string _text) {
+	time = _time * 60;
+	buff = _text;
+	text.clear();
+}
+
+//=========================================
+//表示間隔を変更する
+//=========================================
+void Text::ChangeSpeed(float _time) {
+	time = _time;
+}
+
+//=========================================
 //文字色変更
 //=========================================
 void Text::ChangeColor(int r, int g, int b) {
@@ -154,11 +205,28 @@ void Text::TextRight() {
 }
 
 void Text::SetFont(Font * _font) {
+	font->Release();
 	font = _font;
 }
 
 void Text::Update() {
-
+	//-----------------------------
+	//文字列が1以上あれば
+	//-----------------------------
+	if (buff.size() > 0) {
+		if (currentTime - wait < time) {
+			currentTime++;
+		}
+		else {
+			text += buff.substr(0, 1);		//先頭文字取り出し
+			buff.erase(buff.begin());
+			currentTime = 0;
+			wait = 0;
+		}
+	}
+	else {
+		
+	}
 }
 
 void Text::UnInit()

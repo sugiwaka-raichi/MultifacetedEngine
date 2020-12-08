@@ -15,9 +15,13 @@ class Text:public OBJECT
 protected:
 	int size_width, size_height;
 	RECT rect;
-	string text;
+	string text;		//表示するテキスト
+	string buff;		//表示していくテキスト
 	int Red, Green, Blue;
 	int mode;		//表示位置モード
+	float time;
+	float currentTime = 0;
+	float wait = 0;
 public:
 	//LPD3DXFONT font;		//フォント
 	Font* font;
@@ -33,10 +37,20 @@ public:
 	//変更処理
 	//=====================================
 	void ChangeTextPosition(int left, int top, int right, int bottom);
+	void ChangeTextPosition(RECT _rect);
 	void ChangeTextPositionAdd(float left, float top, float right, float bottom);
-	void ChangeText(string);
+	void ChangeTextPositionAdd(float _x,float _y);
 	void ChangeColor(int r, int g, int b);
 	void ChangeFontSize(int, int);
+	void ChangeText(string);
+
+	//====================================
+	//テキスト効果
+	//====================================
+	void ChangeText(float _time, string _text);
+	void ChangeSpeed(float _time);
+	bool AllDispText();		//現バッファを全部表示する
+	void SetWait(float _time);
 
 	//テキスト描画
 	void TextDraw();
