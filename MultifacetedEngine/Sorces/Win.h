@@ -39,7 +39,6 @@ using namespace std;
 #define WINDOW_NAME	TEXT("Title")
 #ifdef UNICODE
 //ユニコード用
-
 #define string wstring	//ユニコード用string
 #define LPCSTR LPWSTR	//ユニコード用LPCSTR
 #else

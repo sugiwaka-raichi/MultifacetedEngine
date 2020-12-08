@@ -103,7 +103,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	//ÉQÅ[ÉÄÇÃèâä˙èàóù
 	if (!GameInit(hInstance, hWnd, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN)) {
 		GameExit();
-		MessageBox(hWnd, TEXT("ERROR"), TEXT("GameInit Error"), MB_OK);
+		MessageBox(hWnd, L"ERROR", L"GameInit Error", MB_OK);
 		return false;
 	}
 
