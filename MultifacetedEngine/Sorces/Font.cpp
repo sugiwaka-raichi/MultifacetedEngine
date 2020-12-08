@@ -18,13 +18,15 @@ Font::Font() {
 void Font::ChangeFontSize(float _w, float _h) {
 	fontSizeW = _w;
 	fontSizeH = _h;
+	FCreateFont();
 }
 
 //===========================================================
 //フォントデータを変える
 //===========================================================
-void Font::ChangeFontData(LPCWSTR _fontMame) {
-	fontName = _fontMame;
+void Font::ChangeFontData(LPCWSTR _fontName) {
+	fontName = _fontName;
+	FCreateFont();
 }
 
 //===========================================================
