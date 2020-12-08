@@ -342,14 +342,19 @@ void LoadWave(string path, string filename, bool loop) {
 		int fonum = FindFolderNum(path);
 		int finum = FindFileNum(fonum, filename);
 
-		if (finum < 0) {
+		if (finum < 0 || fonum < 0) {
 			string str = TEXT("ファイル名:") + filename + TEXT("の参照に失敗しました。\nファイルが見つかりませんでした。");
 			ErrorMessage::ErrorMessageBox(str.c_str(), TEXT("Xaudio2 Load Error"), MB_OK);
 			
 			return;
 		}
+
 		//Waveファイルを開く
+		if (path.find_first_of(L"/") == string::npos) {		//パスではなく種別だった時
+			path = sound_fodata.folderpath[fonum];			//該当するフォルダパスを設定する
+		}
 		string filepath = path + filename;		//ファイルパス作成
+		
 		hFile = CreateFile(filepath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 		if (hFile == INVALID_HANDLE_VALUE) {
 			//エラーメッセ
