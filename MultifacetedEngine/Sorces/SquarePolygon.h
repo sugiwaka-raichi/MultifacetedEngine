@@ -75,6 +75,7 @@ public:
 	float GetH();
 	float GetU();
 	float GetV();
+	RECT  GetRect();
 	int GetUP();
 	int GetVP();
 	float GetAngle();
