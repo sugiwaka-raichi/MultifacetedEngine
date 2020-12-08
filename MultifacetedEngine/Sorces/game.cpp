@@ -16,12 +16,21 @@
 LPDIRECT3D9 g_pD3D = NULL;
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;
 SquarePolygon test(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,100,100);
+SquarePolygon TextWindow(SCREEN_WIDTH / 2, SCREEN_HEIGHT - SCREEN_HEIGHT / 6, SCREEN_WIDTH - SCREEN_WIDTH / 10, SCREEN_HEIGHT / 4);
 TextureManager TexManager;
 
-Text testtex;
-Button button;
+//*****************************************************************
+Text testtex;		//テストテキスト
+Text serifu;		//テストセリフ
+Button button;		//仮ボタン
 
-vector<OBJECT*> stack;			//オブジェクトを実行するための箱
+vector<OBJECT*> stack;			//オブジェクトの命令を実行するための箱
+
+int anim[3] = { 10,0,-10 };			//アニメーション(仮)
+vector<string> serifuList;			//セリフ一覧
+int currentSerifu = 0;				//現在のセリフ位置
+float textSpeed = 0.2f;				//テキスト表示速度
+//*****************************************************************
 
 bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen) {
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -93,23 +102,65 @@ bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen
 	InitInput(hinst, hWnd);
 	InitSound();
 
-	LoadWave(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"), true);
+	//LoadWave(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"), true);
+	LoadWave(L"BGM", L"play.wav", true);					//BGMのplayをロード
 	TextureManager::FileDataInit();
-	TextureManager::TextureLoad(TEXT("IMG_0914.PNG"));		//テクスチャ読み込み
+	TextureManager::TextureLoad(L"IMG_0914.PNG");		//テクスチャ読み込み
+	TextureManager::TextureLoad(L"BackGround.jpg");			//背景読込
+	TextureManager::TextureLoad(L"kud_tati1.png");			//クドの立ち絵
 	test.SetTexture(TextureManager::GetTexture(TEXT("IMG_0914.PNG")));
 	testtex.InitText();
+	serifu.InitText();
+
+	Font* serifuFont = new Font();
+	serifuFont->ChangeFontSize(14 * (1.0f / SCREEN_WIDTH), 14 * (1.0f / SCREEN_HEIGHT));
+	serifu.SetFont(serifuFont);
 
 	//テスト
-	test.SetU(1);
-	test.SetV(1);
-	test.SetUP(1);
-	test.SetVP(1);
 	testtex.InitText();
 	button.CreatePolygon(100, 100, 100, 100);
+	TextWindow.SetColor(D3DCOLOR_RGBA(255, 255, 255, 127));
+	serifu.ChangeColor(255, 0, 0);
+	serifu.ChangeTextPosition(TextWindow.GetRect());
+	serifu.TextLeft();
 
+	SquarePolygon* back = new SquarePolygon(SCREEN_WIDTH / 2, SCREEN_HEIGHT  /2, SCREEN_WIDTH, SCREEN_HEIGHT);	//背景
+	SquarePolygon* kud = new SquarePolygon(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 200, 400, 500);					//立ち絵
+
+	//-----------------------------
+	//テクスチャの設定
+	//-----------------------------
+	back->SetTexture(TextureManager::GetTexture(L"BackGround.jpg"));
+	kud->SetTexture(TextureManager::GetTexture(L"kud_tati1.png"));
+
+	//------------------------------
+	//レイヤの設定
+	//------------------------------
+	back->SetLayernum(0);
+	button.SetLayernum(1);
+	test.SetLayernum(0);
+	testtex.SetLayernum(3);
+	kud->SetLayernum(1);
+	TextWindow.SetLayernum(2);
+	serifu.SetLayernum(3);
+
+	//------------------------------------
+	//スタックにオブジェクトをセットする
+	//------------------------------------
+	stack.push_back(back);
 	stack.push_back(&button);
 	stack.push_back(&test);
 	stack.push_back(&testtex);
+	stack.push_back(kud);
+	stack.push_back(&TextWindow);
+	stack.push_back(&serifu);
+
+	//-------------------------------------------------
+	//セリフの設定(本来はファイルから読み込む)
+	//-------------------------------------------------
+	serifuList.push_back(L"わふー");
+	serifuList.push_back(L"おはようございます！");
+	serifuList.push_back(L"お\nわ\nり");
 	return true;
 }
 
@@ -127,7 +178,7 @@ void GameUpdate() {
 		soundflg = true;
 	}
 	if (soundflg) {
-		/*xaudio.*/PlaySound(TEXT("BGM"), TEXT("play.wav"));
+		/*xaudio.*/PlaySound(L"BGM", L"play.wav");
 		soundflg = false;
 	}
 
@@ -136,7 +187,7 @@ void GameUpdate() {
 	test.SetAngle(10 + ang);
 	
 	if (ang % 601 == 120) {
-		StopSound(TEXT("./Asset/Sound/BGM/"), TEXT("play.wav"));
+		StopSound(L"BGM", L"play.wav");
 	}
 	testtex.ChangeTextPosition(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if (GetMousePress(MOUSE_KEYTYPE::BACK)) {
@@ -149,16 +200,69 @@ void GameUpdate() {
 	if (GetMousePress(MOUSE_KEYTYPE::LEFT)) {
 		testtex.ChangeText(to_wstring(GetMouseScreenX()) + L":" + to_wstring(GetMouseScreenY()));
 	}
+	
+	for (int i = 0; i < stack.size(); i++) {
+		stack[i]->Update();
+	}
 
+	//serifu.Update();		//セリフを少しずつ表示する更新処理
+
+	//------------------------------------------------------------------------------
+	//セリフの表示制御
+	//------------------------------------------------------------------------------
+	if (GetMouseTrigger(MOUSE_KEYTYPE::LEFT) || GetKeyboardTrigger(DIK_SPACE)) {
+		if (serifu.AllDispText()) {		//テキスト表示途中であれば全表示、でなければfalseを返す
+
+		}
+		else {
+			if (serifuList.size() > currentSerifu) {		//セリフがあれば
+				serifu.ChangeText(textSpeed, serifuList[currentSerifu]);		//次のセリフを表示
+				currentSerifu++;		//表示セリフを変更
+			}
+			else {
+				//デバッグなので先頭に戻す
+				currentSerifu = 0;
+			}
+		}
+	}
+	//serifu.ChangeText(L"今カーソルの位置は:" + to_wstring(GetMouseScreenX()) + L':' + to_wstring(GetMouseScreenY()));
+
+	//-------------------------------------------------------------------
+	//簡易ボタン
+	//-------------------------------------------------------------------
 	if (button.OnCursor()) {
 		button.SetColor(D3DCOLOR_RGBA(255,0,0,255));
 		if (button.OnClick(MOUSE_KEYTYPE::LEFT)) {
 			button.SetColor(D3DCOLOR_RGBA(0, 255, 0, 255));
-			testtex.ChangeText(L"わふ");
+			testtex.ChangeText(L"Click!");
+			if (button.GetDispFlag()) {
+				button.SetDispFlag(false);
+			}
+			else {
+				button.SetDispFlag(true);
+			}
 		}
 	}
 	else {
 		button.SetColor(D3DCOLOR_RGBA(255, 255, 255, 255));
+	}
+
+	//---------------------------------------------------------------------------
+	//描画順を決めるためのSort処理
+	//---------------------------------------------------------------------------
+	{
+		OBJECT* temp;
+		for (int i = 0; i + 1 < stack.size(); ) {
+			//AがBより大きければ
+			if (stack[i]->GetLayernum() > stack[i + 1]->GetLayernum()) {
+				temp = stack[i];
+				stack[i] = stack[i + 1];
+				stack[i + 1] = temp;
+			}
+			else {
+				i++;
+			}
+		}
 	}
 	//########################
 	//End test
@@ -177,7 +281,9 @@ void GameRender() {
 		//test.DrawPolygon(TextureManager::GetTexture(TEXT("IMG_0914.PNG")));
 		//testtex.TextDraw();
 		for (int i = 0; i < stack.size(); i++) {
-			stack[i]->Draw();		//スタックにある描画するオブジェクトを順に描画
+			if (stack[i]->GetDispFlag()) {			//表示フラグがONであれば表示する
+				stack[i]->Draw();		//スタックにある描画するオブジェクトを順に描画
+			}
 		}
 
 		g_pD3DDevice->EndScene();
