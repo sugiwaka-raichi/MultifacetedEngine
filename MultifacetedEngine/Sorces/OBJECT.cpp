@@ -8,6 +8,10 @@ void OBJECT::SetDispFlag(bool _flag) {
 	dispFlag = _flag;
 }
 
+void OBJECT::SetName(string _name) {
+	name = _name;
+}
+
 int OBJECT::GetLayernum() {
 	return layer;
 }
@@ -15,4 +19,9 @@ int OBJECT::GetLayernum() {
 bool OBJECT::GetDispFlag()
 {
 	return dispFlag;
+}
+
+string OBJECT::GetObjName()
+{
+	return name;
 }
