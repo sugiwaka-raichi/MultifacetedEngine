@@ -47,9 +47,11 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 			return 4;
 		case TOKEN_TYPE::TT_SHARP:
 			return 5;
-		case TOKEN_TYPE::TT_STRING:
-		case TOKEN_TYPE::TT_NUMBER:
 		case TOKEN_TYPE::TT_TAB:
+			return 7;
+		case TOKEN_TYPE::TT_STRING:
+			return 8;
+		case TOKEN_TYPE::TT_NUMBER:
 		case TOKEN_TYPE::TT_SPACE:
 		case TOKEN_TYPE::TT_SPAR:
 		case TOKEN_TYPE::TT_SBRACKET:
@@ -66,20 +68,16 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 	case STACK_TYPE::ST_E:
 		switch (_in)
 		{
-		case TOKEN_TYPE::TT_STRING:
-			return 11;
 		case TOKEN_TYPE::TT_NUMBER:
 		case TOKEN_TYPE::TT_VBAR:
 		case TOKEN_TYPE::TT_DOLL:
-			return 9;
-		case TOKEN_TYPE::TT_TAB:
-			return 10;
+			return 11;
 		case TOKEN_TYPE::TT_SPACE:
 			return 12;		//ãÊêÿÇËï∂éö
 		case TOKEN_TYPE::TT_SPAR:
-			return 7;
+			return 9;
 		case TOKEN_TYPE::TT_SBRACKET:
-			return 8;
+			return 10;
 		default:
 			return -1;
 		}
@@ -335,7 +333,18 @@ void PARSE::Rules(int _rulenum) {
 	case 6:		//6.LÅ®E
 		stack[0] = STACK_TYPE::ST_E;
 		break;
-	case 7:		//7.EÅ®(E)E'
+	case 7:	//7.EÅ®TAB T
+		stack[0] = STACK_TYPE::ST_T;
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
+		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
+		break;
+	case 8:	//8.EÅ®T TAB T
+		stack[0] = STACK_TYPE::ST_T;							// T
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
+		stack.insert(stack.begin(), STACK_TYPE::ST_T);			// T
+		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
+		break;
+	case 9:		//9.EÅ®(E)E'
 		stack[0] = STACK_TYPE::ST_Ed;							// E'
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// )
 		stack.insert(stack.begin(), STACK_TYPE::ST_E);			// E
@@ -343,7 +352,7 @@ void PARSE::Rules(int _rulenum) {
 		token_stack.push_back(TOKEN_TYPE::TT_EPAR);				// )
 		token_stack.push_back(TOKEN_TYPE::TT_SPAR);				// (
 		break;
-	case 8:		//8.EÅ®[F]A
+	case 10:	//10.EÅ®[F]A
 		stack[0] = ST_A;							// A
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// ]
 		stack.insert(stack.begin(), STACK_TYPE::ST_F);			// F
@@ -351,20 +360,9 @@ void PARSE::Rules(int _rulenum) {
 		token_stack.push_back(TOKEN_TYPE::TT_EBRACKET);			// ]
 		token_stack.push_back(TOKEN_TYPE::TT_SBRACKET);			// [
 		break;
-	case 9:		//9.EÅ®VE'
+	case 11:		//11.EÅ®VE'
 		stack[0] = STACK_TYPE::ST_Ed;
 		stack.insert(stack.begin(), STACK_TYPE::ST_V);
-		break;
-	case 10:	//10.EÅ®TAB T
-		stack[0] = STACK_TYPE::ST_T;
-		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
-		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
-		break;
-	case 11:	//11.EÅ®T TAB T
-		stack[0] = STACK_TYPE::ST_T;							// T
-		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
-		stack.insert(stack.begin(), STACK_TYPE::ST_T);			// T
-		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
 		break;
 	case 12:	//12.EÅ®spE
 		stack[0] = STACK_TYPE::ST_E;

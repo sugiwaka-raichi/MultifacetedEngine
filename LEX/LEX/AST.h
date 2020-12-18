@@ -59,15 +59,23 @@ public:
 //=================================
 class NODE_OP :public AST {
 public:
-	string op;		//演算子
+	char op;		//演算子
 	AST *left;		//左辺のノード
 	AST *right;		//右辺のノード
 	virtual NODE GetNodeType() { return NODE::OP; }
 
-	NODE_OP(string _op, AST *_left, AST *_right) :
+	NODE_OP(char _op, AST *_left, AST *_right) :
 		op(_op), left(_left), right(_right) {}
 };
 
 //====================================
 //関数ノード
 //====================================
+class NODE_FUNCTION :public AST {
+public:
+	string name;		//関数名
+	AST *left;			//左辺ノード
+	AST *right;			//右辺ノード
+	virtual NODE GetNodeType() {}
+
+};
