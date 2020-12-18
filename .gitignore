@@ -13,3 +13,7 @@ Release/
 =======
 MultifacetedEngine/MultifacetedEngine_Debugx86.ilk
 >>>>>>> dev_/Update
+規則解析表.xlsx
+~$規則解析表.xlsx
+*.iobj
+*.ipdb
