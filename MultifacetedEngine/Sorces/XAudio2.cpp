@@ -85,7 +85,7 @@ IXAudio2               *g_pXAudio2        = NULL;
 IXAudio2MasteringVoice *g_pMasteringVoice = NULL;
 
 char* pbuffer;
-string DefaultDirectory = TEXT("./Asset/Sound/") ;		//デフォルトディレクトリパス
+string DefaultDirectory = L"./Asset/Sound/";		//デフォルトディレクトリパス
 SOUND_FOLDER_DATA sound_fodata;						//サウンドファイル情報
 bool sound_order_state = false;						//サウンド命令許可状態
 

@@ -45,7 +45,7 @@ bool TextureManager::FileDataInit() {
 	tex_directory = DEFAULT_TEXTURE_PATH;		//テクスチャディレクトリ名
 	texture_data.filedata = FileOperation::GetDirectoryData(tex_directory);	//ディレクトリ内の情報を取得
 	if (texture_data.filedata == nullptr) {
-		ErrorMessage::ErrorMessageBox(LPCSTR("ディレクトリの情報取得に失敗しました。"), LPCSTR("Texture Init Error"), MB_OK);
+		ErrorMessage::ErrorMessageBox(L"ディレクトリの情報取得に失敗しました。", L"Texture Init Error", MB_OK);
 		exit(1);
 		return false;
 	}
