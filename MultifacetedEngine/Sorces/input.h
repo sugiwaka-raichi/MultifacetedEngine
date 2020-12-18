@@ -51,5 +51,5 @@ BYTE GetMousePress(int);				//取得データ制限
 DIMOUSESTATE2 GetMouseTrigger(void);	//MOUSEクリック状況(押されたか）
 BYTE GetMouseTrigger(int);				//取得データ制限
 
-vector<BYTE*> GetKeyDate();				//入力キーを取得
+//vector<BYTE*> GetKeyDate();				//入力キーを取得
 //#endif

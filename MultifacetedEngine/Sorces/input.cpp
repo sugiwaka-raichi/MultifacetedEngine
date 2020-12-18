@@ -453,9 +453,9 @@ BYTE GetMouseTrigger(int _key) {
 	return g_mouseStateTrigger.rgbButtons[_key];
 }
 
-vector<BYTE*> GetKeyDate()
-{
-	vector<BYTE*> keyData;
-	keyData.push_back(g_keyState);		//
-	return keyData;
-}
+//vector<BYTE*> GetKeyDate()
+//{
+//	vector<BYTE*> keyData;
+//	keyData.push_back(g_keyState);		//
+//	return keyData;
+//}
