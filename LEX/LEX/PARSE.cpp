@@ -3,6 +3,8 @@
 
 using namespace std;
 
+vector<string> data;
+
 PARSE::PARSE() {
 }
 
@@ -168,6 +170,8 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 		case TOKEN_TYPE::TT_NUMBER:
 		case TOKEN_TYPE::TT_SBRACKET:
 		case TOKEN_TYPE::TT_SPAR:
+			break;
+		case TOKEN_TYPE::TT_SPACE:
 			return 17;
 		default:
 			break;
@@ -333,16 +337,18 @@ void PARSE::Rules(int _rulenum) {
 	case 6:		//6.L→E
 		stack[0] = STACK_TYPE::ST_E;
 		break;
-	case 7:	//7.E→TAB T
+	case 7:	//7.L→TAB T
 		stack[0] = STACK_TYPE::ST_T;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
 		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
+		//命令パターンを名前付きテキスト
 		break;
-	case 8:	//8.E→T TAB T
+	case 8:	//8.L→T TAB T
 		stack[0] = STACK_TYPE::ST_T;							// T
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
 		stack.insert(stack.begin(), STACK_TYPE::ST_T);			// T
 		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
+		//命令パターンをテキストのみ
 		break;
 	case 9:		//9.E→(E)E'
 		stack[0] = STACK_TYPE::ST_Ed;							// E'
@@ -351,6 +357,7 @@ void PARSE::Rules(int _rulenum) {
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// (
 		token_stack.push_back(TOKEN_TYPE::TT_EPAR);				// )
 		token_stack.push_back(TOKEN_TYPE::TT_SPAR);				// (
+		//命令パターンを(式)として最優先
 		break;
 	case 10:	//10.E→[F]A
 		stack[0] = ST_A;							// A
@@ -359,10 +366,12 @@ void PARSE::Rules(int _rulenum) {
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// [
 		token_stack.push_back(TOKEN_TYPE::TT_EBRACKET);			// ]
 		token_stack.push_back(TOKEN_TYPE::TT_SBRACKET);			// [
+		//命令パターンを関数呼出
 		break;
 	case 11:		//11.E→VE'
 		stack[0] = STACK_TYPE::ST_Ed;
 		stack.insert(stack.begin(), STACK_TYPE::ST_V);
+		//命令パターンを変数に
 		break;
 	case 12:	//12.E→spE
 		stack[0] = STACK_TYPE::ST_E;
@@ -371,9 +380,11 @@ void PARSE::Rules(int _rulenum) {
 		break;
 	case 13:	//13.E'→ε
 		stack.erase(stack.begin());					//スタック終了
+		//命令パターンの終端
 		break;
 	case 14:	//14.E'→O
 		stack[0] = STACK_TYPE::ST_O;		// 演算子
+		//命令パターンに演算子を追加
 		break;
 	case 15:	//15.E'→spE'
 		stack[0] = STACK_TYPE::ST_Ed;
@@ -384,18 +395,22 @@ void PARSE::Rules(int _rulenum) {
 		stack[0] = STACK_TYPE::ST_E;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//演算子
 		token_stack.push_back(TOKEN_TYPE::TT_OP);			//演算子
+		//右辺の式を追加
 		break;
-	case 17:	//17.O→EO
-		stack.insert(stack.begin(), STACK_TYPE::ST_E);		//空白無しの式
+	case 17:	//17.O→spO
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//空白
+		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
 	case 18:	//18.V→$F		//変数
 		stack[0] = ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_DOLL);				// $
+		//グローバル変数呼出
 		break;
 	case 19:	//19.V→|F		//変数
 		stack[0] = ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_VBAR);				// |
+		//ローカル変数呼出
 		break;
 	case 20:	//20.V→num		//数値
 		stack[0] = STACK_TYPE::ST_TOKEN;
@@ -405,29 +420,35 @@ void PARSE::Rules(int _rulenum) {
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
+		//文字列命令パターンに追加
 		break;
 	case 22:	//22.T→numT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
+		//文字列命令パターンに追加
 		break;
 	case 23:	//23.T'→strT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
+		//文字列命令パターンに追加
 		break;
 	case 24:	//24.T'→numT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
+		//文字列命令パターンに追加
 		break;
 	case 25:	//25.T'→ε
 		stack.erase(stack.begin());
+		//文字列命令パターン終了
 		break;
 	case 26:	//26.T'→spε
 		//stack.erase(stack.begin());
 		stack[0] = STACK_TYPE::ST_TOKEN;		
 		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
+		//文字列命令パターン終了
 		break;
 	case 27:	//27.T'→#T'
 		stack[0] = STACK_TYPE::ST_Td;
