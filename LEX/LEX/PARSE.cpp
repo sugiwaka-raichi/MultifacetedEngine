@@ -3,6 +3,8 @@
 
 using namespace std;
 
+vector<string> data;
+
 PARSE::PARSE() {
 }
 
@@ -145,6 +147,7 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 			return 33;
 		case TOKEN_TYPE::TT_OP:
 			return 34;
+		case TOKEN_TYPE::TT_WQORT:		//"修了
 		case TOKEN_TYPE::TT_END:
 			return 25;
 		default:
@@ -168,6 +171,8 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 		case TOKEN_TYPE::TT_NUMBER:
 		case TOKEN_TYPE::TT_SBRACKET:
 		case TOKEN_TYPE::TT_SPAR:
+			break;
+		case TOKEN_TYPE::TT_SPACE:
 			return 17;
 		default:
 			break;
@@ -208,7 +213,7 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 		case TOKEN_TYPE::TT_NUMBER:
 			return 37;
 		case TOKEN_TYPE::TT_SPACE:
-			return 38;
+			//return 38;
 		case TOKEN_TYPE::TT_CRLF:
 		case TOKEN_TYPE::TT_EBRACKET:
 		case TOKEN_TYPE::TT_OP:
@@ -233,6 +238,7 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 		case TOKEN_TYPE::TT_VBAR:
 		case TOKEN_TYPE::TT_DOLL:
 			return 42;
+		case TOKEN_TYPE::TT_EPAR:
 		case TOKEN_TYPE::TT_CRLF:
 		case TOKEN_TYPE::TT_END:
 			return 41;
@@ -260,8 +266,24 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 			return 49;
 		case TOKEN_TYPE::TT_OP:
 			return 48;
+		case TOKEN_TYPE::TT_WQORT:
+			return 50;
 		default:
 			return -1;
+		}
+	//-----------------------------
+	//スタックP 区切り文字
+	//-----------------------------
+	case STACK_TYPE::ST_P:
+		switch (_in) {
+		case TOKEN_TYPE::TT_SPACE:
+			return 51;
+		case TOKEN_TYPE::TT_OP:
+			return 53;
+		case TOKEN_TYPE::TT_EPAR:
+			return 52;
+		default:
+			break;
 		}
 	//-----------------------------
 	//スタック$ 終端記号
@@ -283,14 +305,42 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 //============================================
 void PARSE::Rules(int _rulenum) {
 	//STACK st;		//追加するスタックの情報を格納する変数
+#if SYSTEM_MESSAGE >= 2
 	for (int i = 0; i < token_stack.size(); i++) {
 		cout << "取り除くトークン" << i << ":" << (int)token_stack[i] << endl;
 	}
+#endif
+
 	switch (_rulenum)
 	{
 	case 0:		//スタックと入力取り除き
 		if (token_stack.size() > 0 && input[0].type == token_stack.back()) {
+#if SYSTEM_MESSAGE >= 2
 			cout << "取り除いたトークン:" << (int)token_stack.back() << endl;
+#endif
+			if (input.front().str != L" ") {		//空白は処理しない
+				switch (input.front().type) {
+				case TOKEN_TYPE::TT_STRING:
+				case TOKEN_TYPE::TT_NUMBER:
+				case TOKEN_TYPE::TT_OP:
+				case TOKEN_TYPE::TT_SPAR:
+				case TOKEN_TYPE::TT_EPAR:
+					//命令一覧に追加する処理
+					if (order.size() == 0 || order.back().token != nowToken) {
+						//オーダー最後のトークンと違う時追加処理
+						ORDER tmp;
+						tmp.token = nowToken;
+						order.push_back(tmp);
+					}
+					else if (token_stack.back() == TOKEN_TYPE::TT_EPAR) {		//(の場合例外処理
+						ORDER tmp;
+						tmp.token = ORDER_TOKEN::END;
+						order.push_back(tmp);
+					}
+					order.back().script += input.front().str;		//入力取得
+				}
+
+			}
 			stack.erase(stack.begin());
 			input.erase(input.begin());
 			token_stack.pop_back();
@@ -329,20 +379,25 @@ void PARSE::Rules(int _rulenum) {
 		stack[0] = STACK_TYPE::ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_SHARP);			// #
+		nowToken = ORDER_TOKEN::LABEL;		//ラベルを記録
 		break;
 	case 6:		//6.L→E
 		stack[0] = STACK_TYPE::ST_E;
 		break;
-	case 7:	//7.E→TAB T
+	case 7:	//7.L→TAB T
 		stack[0] = STACK_TYPE::ST_T;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
 		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
+		//命令パターンを名前付きテキスト
+		nowToken = ORDER_TOKEN::STRING;
 		break;
-	case 8:	//8.E→T TAB T
+	case 8:	//8.L→T TAB T
 		stack[0] = STACK_TYPE::ST_T;							// T
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// TAB
 		stack.insert(stack.begin(), STACK_TYPE::ST_T);			// T
 		token_stack.push_back(TOKEN_TYPE::TT_TAB);			// TAB
+		//命令パターンをテキストのみ
+		nowToken = ORDER_TOKEN::STRING;
 		break;
 	case 9:		//9.E→(E)E'
 		stack[0] = STACK_TYPE::ST_Ed;							// E'
@@ -351,6 +406,8 @@ void PARSE::Rules(int _rulenum) {
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// (
 		token_stack.push_back(TOKEN_TYPE::TT_EPAR);				// )
 		token_stack.push_back(TOKEN_TYPE::TT_SPAR);				// (
+		//命令パターンを(式)として最優先
+		nowToken = ORDER_TOKEN::PAR;
 		break;
 	case 10:	//10.E→[F]A
 		stack[0] = ST_A;							// A
@@ -359,10 +416,13 @@ void PARSE::Rules(int _rulenum) {
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// [
 		token_stack.push_back(TOKEN_TYPE::TT_EBRACKET);			// ]
 		token_stack.push_back(TOKEN_TYPE::TT_SBRACKET);			// [
+		//命令パターンを関数呼出
+		nowToken = ORDER_TOKEN::FUNCTION;
 		break;
 	case 11:		//11.E→VE'
 		stack[0] = STACK_TYPE::ST_Ed;
 		stack.insert(stack.begin(), STACK_TYPE::ST_V);
+		//命令パターンを変数に
 		break;
 	case 12:	//12.E→spE
 		stack[0] = STACK_TYPE::ST_E;
@@ -371,9 +431,12 @@ void PARSE::Rules(int _rulenum) {
 		break;
 	case 13:	//13.E'→ε
 		stack.erase(stack.begin());					//スタック終了
+		//命令パターンの終端
 		break;
 	case 14:	//14.E'→O
 		stack[0] = STACK_TYPE::ST_O;		// 演算子
+		//命令パターンに演算子を追加
+		nowToken = ORDER_TOKEN::OPERATION;
 		break;
 	case 15:	//15.E'→spE'
 		stack[0] = STACK_TYPE::ST_Ed;
@@ -384,50 +447,63 @@ void PARSE::Rules(int _rulenum) {
 		stack[0] = STACK_TYPE::ST_E;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//演算子
 		token_stack.push_back(TOKEN_TYPE::TT_OP);			//演算子
+		//右辺の式を追加
 		break;
-	case 17:	//17.O→EO
-		stack.insert(stack.begin(), STACK_TYPE::ST_E);		//空白無しの式
+	case 17:	//17.O→spO
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//空白
+		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
 	case 18:	//18.V→$F		//変数
 		stack[0] = ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_DOLL);				// $
+		//グローバル変数呼出
+		nowToken = ORDER_TOKEN::VARIABLE;
 		break;
 	case 19:	//19.V→|F		//変数
 		stack[0] = ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_VBAR);				// |
+		//ローカル変数呼出
+		nowToken = ORDER_TOKEN::VARIABLE;
 		break;
 	case 20:	//20.V→num		//数値
 		stack[0] = STACK_TYPE::ST_TOKEN;
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
+		nowToken = ORDER_TOKEN::VALUE;
 		break;
 	case 21:	//21.T→strT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
+		//文字列命令パターンに追加
 		break;
 	case 22:	//22.T→numT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
+		//文字列命令パターンに追加
 		break;
 	case 23:	//23.T'→strT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_STRING);			// string
+		//文字列命令パターンに追加
 		break;
 	case 24:	//24.T'→numT'
 		stack[0] = STACK_TYPE::ST_Td;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_NUMBER);			// number
+		//文字列命令パターンに追加
 		break;
 	case 25:	//25.T'→ε
 		stack.erase(stack.begin());
+		//文字列命令パターン終了
 		break;
 	case 26:	//26.T'→spε
 		//stack.erase(stack.begin());
 		stack[0] = STACK_TYPE::ST_TOKEN;		
 		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
+		//文字列命令パターン終了
 		break;
 	case 27:	//27.T'→#T'
 		stack[0] = STACK_TYPE::ST_Td;
@@ -499,6 +575,7 @@ void PARSE::Rules(int _rulenum) {
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_EPAR);			// )
 		token_stack.push_back(TOKEN_TYPE::TT_SPAR);			// (
+		nowToken = ORDER_TOKEN::ARGUMENT;
 		break;
 	case 41:	//41.A→ε
 		stack.erase(stack.begin());
@@ -510,36 +587,67 @@ void PARSE::Rules(int _rulenum) {
 		stack[0] = ST_E;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_OP);
+		nowToken = ORDER_TOKEN::OPERATION;		//関数 演算子 式の成立
 		break;
 	case 44:	//44.A'→ε 引数無し
 		stack.erase(stack.begin());
 		break;
-	case 45:	//45.A'→VA'  変数または数値
-		stack[0] = STACK_TYPE::ST_Ad;
+	case 45:	//45.A'→VP  変数または数値
+		stack[0] = STACK_TYPE::ST_P;
 		stack.insert(stack.begin(), STACK_TYPE::ST_V);
 		break;
-	case 46:	//46.A'→TA'	文字列
+	case 46:	//46.A'→TA'	文字列※消せ
 		stack[0] = STACK_TYPE::ST_Ad;
 		stack.insert(stack.begin(), STACK_TYPE::ST_T);
+		nowToken = ORDER_TOKEN::STRING;
 		break;
-	case 47:	//47.A'→spA'
+	case 47:	//47.A'→spA'	//引数の区切り※けせ
 		stack[0] = STACK_TYPE::ST_Ad;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_SPACE);			// SPACE
+		nowToken = ORDER_TOKEN::END;
 		break;
-	case 48:	//48.A'→opA'
-		stack[0] = STACK_TYPE::ST_Ad;
+	case 48:	//48.A'→opP
+		stack[0] = STACK_TYPE::ST_P;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);
 		token_stack.push_back(TOKEN_TYPE::TT_OP);			// OP
+		nowToken = ORDER_TOKEN::OPERATION;
 		break;
-	case 49:	//49.A'→[F]AA'
-		stack[0] = ST_Ad;							// A'
+	case 49:	//49.A'→[F]AP
+		stack[0] = ST_Ad;							// P
 		stack.insert(stack.begin(), STACK_TYPE::ST_A);			// A
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// ]
 		stack.insert(stack.begin(), STACK_TYPE::ST_F);			// F
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// [
 		token_stack.push_back(TOKEN_TYPE::TT_EBRACKET);			// ]
 		token_stack.push_back(TOKEN_TYPE::TT_SBRACKET);			// [
+		nowToken = ORDER_TOKEN::FUNCTION;
+		break;
+	case 50:	//50.A'→"T"P'
+		stack[0] = ST_P;							// P
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// "
+		stack.insert(stack.begin(), STACK_TYPE::ST_T);			// T
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// "
+		token_stack.push_back(TOKEN_TYPE::TT_WQORT);			// "
+		token_stack.push_back(TOKEN_TYPE::TT_WQORT);			// "
+		nowToken = ORDER_TOKEN::STRING;
+		break;
+	case 51:	//51.P→spA'
+		stack.front() = ST_Ad;
+		stack.insert(stack.begin(),STACK_TYPE::ST_TOKEN);
+		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
+		nowToken = ORDER_TOKEN::END;
+		break;
+	case 52:	//52.P→ε
+		stack.erase(stack.begin());
+		break;
+	case 53:	//53.P→opspA'
+		stack.front() = STACK_TYPE::ST_Ad;
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//sp
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//op
+		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
+		token_stack.push_back(TOKEN_TYPE::TT_OP);
+		nowToken = ORDER_TOKEN::OPERATION;
 		break;
 	default:
 		//エラー ルールがない
@@ -547,16 +655,16 @@ void PARSE::Rules(int _rulenum) {
 	}
 }
 
-void PARSE::Tree(STACK_TYPE _stack, TOKEN _token) {
-	if (root == nullptr) {
-		root = new NODE;
-	}
-	else {
-		//root->child.push_back(new NODE);		//子のノードにノード作成
-	}
-	root->stack = _stack;		//スタックを記録
-	root->token = _token;		//トークンを記録
-}
+//void PARSE::Tree(STACK_TYPE _stack, TOKEN _token) {
+//	if (root == nullptr) {
+//		root = new NODE;
+//	}
+//	else {
+//		//root->child.push_back(new NODE);		//子のノードにノード作成
+//	}
+//	root->stack = _stack;		//スタックを記録
+//	root->token = _token;		//トークンを記録
+//}
 
 void PARSE::OutPut()
 {
@@ -604,6 +712,9 @@ void PARSE::OutPut()
 		case STACK_TYPE::ST_Ad:
 			cout << "A'";
 			break;
+		case STACK_TYPE::ST_P:
+			cout << "P";
+			break;
 		case STACK_TYPE::ST_TOKEN:
 			cout << "t";
 			break;
@@ -647,6 +758,10 @@ PARSE & PARSE::GetInstance() {
 void PARSE::Analysis(vector<TOKEN> _tokenList) {
 	//スタックの初期化
 	//stack.resize(2);					//サイズを開始記号と終端記号を格納できるように二サイズ確保
+	order.clear();
+
+	//スタックをリセット
+	stack.clear();
 	stack.insert(stack.begin(), ST_S);	//先頭に開始記号を入れる
 	stack.push_back(ST_$);				//末尾に終端記号を入れる
 
@@ -684,9 +799,11 @@ void PARSE::Analysis(vector<TOKEN> _tokenList) {
 			//OutPut();
 			//cout << endl;
 		}
+#if SYSTEM_MESSAGE >= 2
 		cout << stack[0] << "	" << (int)input[0].type << "	" << rulesnum << "	";
 		OutPut();
 		cout << "\r\n";
+#endif
 		Rules(rulesnum);		//解析表から取得したルール番号にあった処理を行う
 
 		if (stack[0] == ST_$) {
@@ -706,5 +823,17 @@ void PARSE::Analysis(vector<TOKEN> _tokenList) {
 		}
 
 	}
+	wcout << "\n\n";
 
+#if SYSTEM_MESSAGE >= 1
+	for (int i = 0; i < order.size(); i++) {
+		wcout << to_wstring((int)order[i].token) << ':' << order[i].script << endl;
+	}
+#endif
+	//命令一覧に一行分のデータを追加する
+	orderList.push_back(order);
+}
+
+vector<vector<ORDER>> PARSE::GetOrder() {
+	return orderList;
 }

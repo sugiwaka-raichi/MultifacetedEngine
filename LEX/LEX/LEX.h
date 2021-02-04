@@ -1,8 +1,10 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <fstream>
 
 using namespace std;
+#define SYSTEM_MESSAGE 	2	//0非表示 1結果表示 2全表示
 
 #ifdef UNICODE
 #define string wstring
@@ -34,6 +36,7 @@ typedef enum class TOKEN_TYPE {
 	TT_VBAR,			// |
 	TT_DOLL,			// $
 	TT_NOT,				// !
+	TT_WQORT,			// "
 
 	//----------------
 	//演算子

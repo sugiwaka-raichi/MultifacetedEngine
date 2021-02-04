@@ -5,6 +5,7 @@
 #include "LEX.h"
 #include "PARSE.h"
 #include "StringOperation.h"
+#include "SEMANTIC.h"
 
 using namespace std;
 
@@ -23,6 +24,8 @@ string StringLine(string* _str_p);
 
 int main() {
 	LEX lex = LEX::GetInstance();		//字句解析のインスタンスを取得
+	PARSE parse = PARSE::GetInstance();		//構文解析のインスタンスを取得
+	SEMANTIC sem = SEMANTIC::GetInstance();
 	setlocale(LC_ALL, "Japanese");
 
 	while (true) {
@@ -31,19 +34,21 @@ int main() {
 		//script = SCRIPT;
 		vector<string> line_script = StringOperation::Split(script,L'\n');		//行ごとに分ける
 
+		wcout << L"スクリプトの内容" << endl;
 		wcout << script << "\n" << endl;
-
 		//--------------------------------------------------
 		//一行処理
 		//--------------------------------------------------
 		for (int i = 0; i < line_script.size(); i++) {
+#if SYSTEM_MESSAGE >= 1
 			wcout << L"\033[32m";
 			wcout << line_script[i] << endl;
 			wcout << L"\033[m";
+#endif 
 			lex.Analysis(line_script[i]);
 
 			vector<TOKEN> token = lex.GetTokenList();	//トークンを取得
-
+#if SYSTEM_MESSAGE >= 1
 			for (int i = 0; i < token.size(); i++) {
 
 #ifdef UNICODE
@@ -62,13 +67,13 @@ int main() {
 #endif
 			}
 			cout << "\n";
-			PARSE parse = PARSE::GetInstance();		//構文解析のインスタンスを取得
 			parse.Analysis(token);
 			cout << endl;
-
-			//意味解析
-
+#endif
 		}
+		sem.SetScript(parse.GetOrder());		//構文解析の結果を渡す
+		sem.Analysis();
+
 		cout << "解析終了" << endl;
 		getchar();			//再解析を行う
 		system("CLS");
@@ -84,7 +89,6 @@ string Load(string filepath) {
 	//string line;
 	int i = 0;
 	wifstream text(filepath);
-	
 	if (text.fail()) {
 		string script = L"file open fail";
 		wcout << script << endl;
