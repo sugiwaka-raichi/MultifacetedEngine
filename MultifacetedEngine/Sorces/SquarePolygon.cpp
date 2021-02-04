@@ -108,10 +108,16 @@ void SquarePolygon::CreateVertex() {
 	}
 }
 
+//=============================================================
+//向いている方向に動く
+//=============================================================
 void SquarePolygon::DirectionMove(float _amount) {
 	DirectionMove(_amount, 0);
 }
 
+//=============================================================
+//向いている方向に指定された量移動
+//=============================================================
 void SquarePolygon::DirectionMove(float _amount, float _angle) {
 	float rad;
 	rad = (angle + _angle) * PI / 180.0f;
@@ -155,20 +161,32 @@ void SquarePolygon::DrawPolygon(LPDIRECT3DTEXTURE9 texture) {
 	GetDevice()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VERTEX_2D));
 }
 
-void SquarePolygon::Init()
-{
+//==============================================
+//初期化関数:OBJECT
+//==============================================
+void SquarePolygon::Init() {
+
 }
 
+//==============================================
+//描画関数:OBJECT
+//==============================================
 void SquarePolygon::Draw() {
 	DrawPolygon();
 }
 
+//==============================================
+//更新処理:OBJECT
+//==============================================
 void SquarePolygon::Update() {
 	currentTime++;
 }
 
-void SquarePolygon::UnInit()
-{
+//==============================================
+//終了処理:OBJECT
+//==============================================
+void SquarePolygon::UnInit() {
+
 }
 
 //====================================================
@@ -222,12 +240,18 @@ void SquarePolygon::SetTexture(LPDIRECT3DTEXTURE9* p_tex) {
 	tex = p_tex;		//テクスチャポインタ保持
 }
 
+//==============================================================
+//D3DCOLORを各頂点に設定する関数
+//==============================================================
 void SquarePolygon::SetColor(D3DCOLOR _color) {
 	for (int i = 0; i < 4; i++) {
 		vertex[i].col = _color;
 	}
 }
 
+//===============================================================
+//D3DCOLORのビット列変更を行う関数
+//===============================================================
 void SquarePolygon::SetColor(COLOR _col, int _value) {
 	_value & 0xFF;		//1バイトに収める
 	D3DCOLOR col = GetColor();
@@ -255,11 +279,17 @@ void SquarePolygon::SetColor(COLOR _col, int _value) {
 	SetColor(col);
 }
 
+//=================================================
+//ポリゴンの座標を設定する関数
+//=================================================
 void SquarePolygon::SetPos(float _x, float _y) {
 	x = _x;
 	y = _y;
 }
 
+//=================================================
+//ポリゴンのサイズを設定する関数
+//=================================================
 void SquarePolygon::SetSize(float _w, float _h) {
 	w = _w;
 	h = _h;
@@ -322,8 +352,7 @@ string SquarePolygon::GetTag() {
 	return tag;
 }
 
-D3DCOLOR SquarePolygon::GetColor()
-{
+D3DCOLOR SquarePolygon::GetColor() {
 	return vertex[0].col;			//ポリゴンの色(頂点色は同一のものしか現状扱えないのでこれで問題なし)
 }
 

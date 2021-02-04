@@ -12,7 +12,7 @@ private:
 	bool italic;					//斜体
 	LPCWSTR fontName;				//使用するフォントの名前
 
-	LPD3DXFONT font;				//作成したフォントの情報
+	LPD3DXFONT font = nullptr;				//作成したフォントの情報
 public:
 	Font();
 

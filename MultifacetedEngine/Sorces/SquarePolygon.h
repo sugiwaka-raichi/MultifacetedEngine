@@ -26,7 +26,7 @@ protected:
 	float x, y;		//座標
 	float w, h;		//大きさ
 	float u, v;		//テクスチャ表示範囲
-	int up, vp;		//テクスチャ表示位置
+	int up = 0, vp = 0;		//テクスチャ表示位置
 	float angle;	//回転角
 	int timer;		//設定されている時間
 	int currentTime;		//今の時間
