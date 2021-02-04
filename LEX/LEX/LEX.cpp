@@ -54,7 +54,6 @@ void LEX::Analysis(string _str) {
 			}
 			continue;
 		}
-
 		//7bit‚Ì”ÍˆÍ(ASCII CODE)
 #ifdef UNICODE
 		if (str[i] < 0x7F) {	//7bit(ASCII)‚Ì”ÍˆÍ‚ð’´‚¦‚é‚Ì‚Å
@@ -199,9 +198,14 @@ bool LEX::Symbol(char _symbol) {
 	case '/':
 		//break;
 	case '%':
+	case '<':
+	case '>':
+	case '!':
 		break;
 	case '\r':
 		return false;
+	case '"':
+		break;
 	//case '<':
 	//	break;
 	//case '>':
@@ -240,6 +244,9 @@ TOKEN_TYPE LEX::JudgeSymbol(char _symbol)
 		//return TOKEN_TYPE::TT_SLASH;
 	case '%':
 		//return TOKEN_TYPE::TT_PERCENT;
+	case '<':
+	case '>':
+	case '!':
 		return TOKEN_TYPE::TT_OP;
 	//case '<':
 	//	return TOKEN_TYPE::TT_LESS;
@@ -257,6 +264,8 @@ TOKEN_TYPE LEX::JudgeSymbol(char _symbol)
 		return TOKEN_TYPE::TT_EBRACKET;
 	case '$':
 		return TOKEN_TYPE::TT_DOLL;
+	case '"':
+		return TOKEN_TYPE::TT_WQORT;
 	//case '!':
 	//	return TOKEN_TYPE::TT_NOT;
 	//case '\r':
