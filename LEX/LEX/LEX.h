@@ -4,7 +4,7 @@
 #include <fstream>
 
 using namespace std;
-#define SYSTEM_MESSAGE 	2	//0非表示 1結果表示 2全表示
+#define SYSTEM_MESSAGE 	1	//0非表示 1結果表示 2全表示
 
 #ifdef UNICODE
 #define string wstring
