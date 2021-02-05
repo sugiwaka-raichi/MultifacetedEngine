@@ -23,6 +23,7 @@ void LEX::Analysis(string _str) {
 	//仮定フラグ群
 	//-----------------------------------
 	bool number = false;		//数値と仮定するかどうか
+	bool minus = false;			//負数と仮定するかどうか
 	bool period = false;		//小数点が入ったかどうか
 	bool strFlg = false;		//文字列として扱っている
 	bool comment = false;		//コメントとして処理する
@@ -61,6 +62,12 @@ void LEX::Analysis(string _str) {
 		if (str[i] >= 0 ) {		//8bit目が1であれば負数になるので
 
 #endif
+			//マイナスであれば負数である可能性を入れる
+			if (str[i] == '-') {
+				minus = true;
+				buff.push_back('-');
+				continue;
+			}
 			//------------------
 			//数値
 			//------------------
@@ -88,9 +95,19 @@ void LEX::Analysis(string _str) {
 					period = false;
 				}
 			}
+			else if (minus && !number) {		//マイナスフラグがたっていれば
+				//負数値ではなかった
+				minus = false;
+				TOKEN tmp;
+				tmp.str = buff;
+				tmp.type = TOKEN_TYPE::TT_OP;
+				buff.clear();
+				tokenList.push_back(tmp);
+			}
 			else {
 				if (number) {
 					number = false;
+					minus = false;
 					TOKEN tmp;
 					tmp.str = buff;		//情報をトークンとして記録
 					tmp.type = TOKEN_TYPE::TT_NUMBER;
