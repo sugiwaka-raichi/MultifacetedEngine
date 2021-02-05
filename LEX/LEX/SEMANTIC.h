@@ -1,6 +1,9 @@
 #pragma once
 #include "PARSE.h"
 
+//------------------------------------
+//命令一覧
+//------------------------------------
 enum OP_CODE {
 	//PUSH,		//プッシュ
 	OP = 0x01,			//演算子
@@ -12,7 +15,11 @@ enum OP_CODE {
 	FUNC,		//関数実行
 };
 
+//---------------------------
+//詳細な演算子
+//---------------------------
 enum OPERATOR {
+	O_ERROR = 0x00,	//エラー			
 	//-----------------------
 	//算術演算子
 	ADD = 0x01,		//加算
@@ -30,17 +37,54 @@ enum OPERATOR {
 	GEQUAL,			//>=
 };
 
+//---------------------------
+//変数の種類
+//---------------------------
+enum VAR_TYPE {
+	VAR_ERROR = 0x00,		//エラー			
+	GLOBAL = 0x01,		//グローバル変数
+	LOCAL,				//ローカル変数
+};
+
+//---------------------------
+//数値の種類
+//---------------------------
+enum VAL_TYPE {
+	VAL_ERROR = 0x00,
+	INT = 0x01,
+	FLOAT,
+	UNSIGNED_INT,
+	UNSIGNED_FLOAT,
+};
+
+//----------------------------
+//テキストの種類
+//----------------------------
+enum TEXT_TYPE {
+	TT_ERROR = 0x00,
+	NAME_TEXT = 0x01,
+	TEXT_ONLY
+};
+
+//==========================
+//書出し用の命令データ構造
+//==========================
 typedef struct {
-	ORDER token;		//内容
 	char code;			//命令用コード
-	int yuusendo;		//優先度
-}TOKEN_YUSEN;
+	ORDER token;		//内容
+}ORDER_DATA;
+
+typedef struct {
+	int priority;		//優先度
+	ORDER_DATA order;	//命令内容
+}ORDER_PRIORITY;
+
 
 class SEMANTIC {
 private:
 	SEMANTIC();
 	vector<vector<ORDER>> orderList;
-	vector<vector<ORDER>> result;
+	vector<vector<ORDER_DATA>> result;
 
 	void Soushajo(vector<ORDER> _in);
 	void Compile();							//書出し

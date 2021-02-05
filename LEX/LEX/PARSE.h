@@ -30,10 +30,11 @@ typedef enum class _order {
 	FUNCTION,	//関数
 	LABEL,		//ラベル
 	VALUE,		//値
-	VARIABLE,	//変数
+	GVARIABLE,	//グローバル変数
+	LVARIABLE,	//ローカル変数
 	OPERATION,	//演算子
 	ARGUMENT,	//引数
-	PAR,		//()
+	PAR,		//(
 	END,		//区切り文字や括弧終わり
 }ORDER_TOKEN;
 

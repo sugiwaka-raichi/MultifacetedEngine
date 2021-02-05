@@ -319,22 +319,22 @@ void PARSE::Rules(int _rulenum) {
 			cout << "取り除いたトークン:" << (int)token_stack.back() << endl;
 #endif
 			if (input.front().str != L" ") {		//空白は処理しない
-				switch (input.front().type) {
+				switch (input.front().type) {		//書き出す内容
 				case TOKEN_TYPE::TT_STRING:
 				case TOKEN_TYPE::TT_NUMBER:
 				case TOKEN_TYPE::TT_OP:
 				case TOKEN_TYPE::TT_SPAR:
 				case TOKEN_TYPE::TT_EPAR:
 					//命令一覧に追加する処理
-					if (order.size() == 0 || order.back().token != nowToken) {
+					if (token_stack.back() == TOKEN_TYPE::TT_EPAR) {		//(の場合例外処理
+						ORDER tmp;
+						tmp.token = ORDER_TOKEN::END;
+						order.push_back(tmp);
+					}
+					else if (order.size() == 0 || order.back().token != nowToken) {
 						//オーダー最後のトークンと違う時追加処理
 						ORDER tmp;
 						tmp.token = nowToken;
-						order.push_back(tmp);
-					}
-					else if (token_stack.back() == TOKEN_TYPE::TT_EPAR) {		//(の場合例外処理
-						ORDER tmp;
-						tmp.token = ORDER_TOKEN::END;
 						order.push_back(tmp);
 					}
 					order.back().script += input.front().str;		//入力取得
@@ -457,14 +457,14 @@ void PARSE::Rules(int _rulenum) {
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_DOLL);				// $
 		//グローバル変数呼出
-		nowToken = ORDER_TOKEN::VARIABLE;
+		nowToken = ORDER_TOKEN::GVARIABLE;
 		break;
 	case 19:	//19.V→|F		//変数
 		stack[0] = ST_F;
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//トークン
 		token_stack.push_back(TOKEN_TYPE::TT_VBAR);				// |
 		//ローカル変数呼出
-		nowToken = ORDER_TOKEN::VARIABLE;
+		nowToken = ORDER_TOKEN::LVARIABLE;
 		break;
 	case 20:	//20.V→num		//数値
 		stack[0] = STACK_TYPE::ST_TOKEN;
