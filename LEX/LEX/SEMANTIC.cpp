@@ -90,7 +90,7 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 				break;
 			case ORDER_TOKEN::STRING:
 				orderData.token = _in[i];
-				orderData.code = OP_CODE::VAR;
+				orderData.code = OP_CODE::TEXT;
 				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::PAR:
@@ -127,17 +127,36 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 		else {		//引数であれば
 			switch (_in[i].token) {
 			case ORDER_TOKEN::STRING:
-				tmp.order.code = OP_CODE::TEXT;
+				orderData.code = OP_CODE::TEXT;
+				orderData.token = _in[i];
+				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::FUNCTION:
-				tmp.order.code = OP_CODE::FUNC;
+				orderData.code = OP_CODE::FUNC;
+				orderData.token = _in[i];
+				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::ARGUMENT:
 				argument++;
+				orderData.code = OP_CODE::ARG;
+				orderData.token = _in[i];
+				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::VALUE:
+				orderData.code = OP_CODE::VAL;
+				orderData.token = _in[i];
+				out.push_back(orderData);
+				break;
 			case ORDER_TOKEN::GVARIABLE:
 				//out.push_back(_in[i]);
+				orderData.code = OP_CODE::VAR | (VAR_TYPE::GLOBAL << 4);
+				orderData.token = _in[i];
+				out.push_back(orderData);
+				break;
+			case ORDER_TOKEN::LVARIABLE:
+				orderData.code = OP_CODE::VAR | (VAR_TYPE::LOCAL << 4);
+				orderData.token = _in[i];
+				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::OPERATION:
 				//演算子以下に分けて処理を行う*/
@@ -145,16 +164,16 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 					//二文字で構成される演算子
 					switch (_in[i].script.front()) {
 					case '=':
-						tmp.order.code = OPERATOR::EQUAL << 4;
+						orderData.code = OPERATOR::EQUAL << 4;
 						break;
 					case '<':
-						tmp.order.code = OPERATOR::GEQUAL << 4;
+						orderData.code = OPERATOR::GEQUAL << 4;
 						break;
 					case '>':
-						tmp.order.code = OPERATOR::SEQUAL << 4;
+						orderData.code = OPERATOR::SEQUAL << 4;
 						break;
 					case '!':
-						tmp.order.code = OPERATOR::NOT << 4;
+						orderData.code = OPERATOR::NOT << 4;
 						break;
 					default:
 						//エラー 許可されていない演算子
@@ -176,20 +195,30 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 					switch (_in[i].script.front())
 					{
 					case '<':
-						tmp.order.code = OPERATOR::SMALL << 4;
+						orderData.code = OPERATOR::SMALL << 4;
 						break;
 					case '>':
-						tmp.order.code = OPERATOR::GREATER << 4;
+						orderData.code = OPERATOR::GREATER << 4;
+						break;
+					case '=':
+					case '+':
+					case '-':
+					case '*':
+					case '/':
 						break;
 					default:
 						break;
 					}
 				}
 				tmp.order.code = tmp.order.code | OP_CODE::OP;			//比較演算子
+				stackFlag = true;
 				break;
 			case ORDER_TOKEN::END:
 				if (_in[i].script == L")") {
 					argument--;		//引数を減らす
+					orderData.code = OP_CODE::ARG;
+					orderData.token = _in[i];
+					out.push_back(orderData);
 				}
 				break;
 			}
@@ -226,15 +255,14 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 		//出力の結果を表示
 		//-----------------------------------------------------
 #if SYSTEM_MESSAGE >= 2
-
 		wcout << "out:";
 		for (int j = 0; j < out.size(); j++) {
-			wcout << out[j].script;
+			wcout << out[j].token.script;
 		}
 		wcout << endl;
 		wcout << "stack:";
 		for (int j = stack.size() - 1; j >= 0; j--) {
-			wcout << stack[j].token.script;
+			wcout << stack[j].order.token.script;
 		}
 		wcout << endl;
 		wcout << L"引数:" << argument << endl;
