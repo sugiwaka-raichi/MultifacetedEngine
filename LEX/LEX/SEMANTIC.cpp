@@ -318,7 +318,7 @@ void SEMANTIC::Compile() {
 			switch (result[i][j].code & 0x0F) {		//上位4bitは考慮しない
 			case OP_CODE::TEXT:
 				//文字列
-				temp = ToByte(1 + sizeof(wchar_t) * result[i][j].token.script.size());
+				temp = ToByte(1 + sizeof(wchar_t) * result[i][j].token.script.size());		//命令のバイト数
 				byte.insert(byte.end(), temp.begin(), temp.end());
 				byte.push_back(result[i][j].code);
 				for (int k = 0; k < result[i][j].token.script.size(); k++) {
@@ -337,9 +337,23 @@ void SEMANTIC::Compile() {
 				}
 			case OP_CODE::FUNC:
 				//関数
+				temp = ToByte(1 + sizeof(wchar_t) * result[i][j].token.script.size());
+				byte.insert(byte.end(), temp.begin(), temp.end());
+				byte.push_back(result[i][j].code);
+				for (int k = 0; k < result[i][j].token.script.size(); k++) {
+					temp = ToByte(result[i][j].token.script[k]);			//文字を1バイトデータに分ける
+					byte.insert(byte.end(), temp.begin(), temp.end());		//文字データを記録
+				}
 				break;
 			case OP_CODE::ARG:
 				//引数
+				temp = ToByte(1 + sizeof(wchar_t) * result[i][j].token.script.size());
+				byte.insert(byte.end(), temp.begin(), temp.end());
+				byte.push_back(result[i][j].code);
+				for (int k = 0; k < result[i][j].token.script.size(); k++) {
+					temp = ToByte(result[i][j].token.script[k]);			//文字を1バイトデータに分ける
+					byte.insert(byte.end(), temp.begin(), temp.end());		//文字データを記録
+				}
 				break;
 			case OP_CODE::OP:
 				//演算子
@@ -416,9 +430,10 @@ vector<char> ToByte(T _data) {
 	int dataSize = sizeof(_data);			//データのバイト数を調べる
 	vector<char> result;					//結果のデータ
 
-	//データサイズを4バイトの範囲で記録
+	//データサイズをnバイトの範囲で記録
 	for (int i = 0; i < dataSize; i++) {	//データサイズ分ループする6
 		result.push_back(_data >> (dataSize - 1 - i) * 8);
 	}
+	reverse(result.begin(), result.end());
 	return result;
 }
