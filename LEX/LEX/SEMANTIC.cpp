@@ -44,6 +44,16 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 				//優先度無し 出力へ直接プッシュ
 				orderData.token = _in[i];
 				orderData.code = OP_CODE::VAL;
+				for (int j = 0; j < orderData.token.script.size(); j++) {
+					//.があれば実数
+					if (orderData.token.script[j] == L'.') {
+						orderData.code |= VAL_TYPE::FLOAT << 4;		//命令概要のオプション 実数
+						break;		//あれば抜ける
+					}
+					else {
+						orderData.code |= VAL_TYPE::INT << 4;		//命令概要のオプション 整数
+					}
+				}
 				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::GVARIABLE:
@@ -145,6 +155,16 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 			case ORDER_TOKEN::VALUE:
 				orderData.code = OP_CODE::VAL;
 				orderData.token = _in[i];
+				for (int j = 0; j < orderData.token.script.size(); j++) {
+					//.があれば実数
+					if (orderData.token.script[j] == L'.') {
+						orderData.code |= VAL_TYPE::FLOAT << 4;		//命令概要のオプション 実数
+						break;		//あれば抜ける
+					}
+					else {
+						orderData.code |= VAL_TYPE::INT << 4;		//命令概要のオプション 整数
+					}
+				}
 				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::GVARIABLE:
@@ -210,13 +230,15 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 						break;
 					}
 				}
-				tmp.order.code = tmp.order.code | OP_CODE::OP;			//比較演算子
+				//tmp.order.code |= OP_CODE::OP;			//演算子
+				orderData.code |= OP_CODE::OP;			//演算子
 				stackFlag = true;
 				break;
 			case ORDER_TOKEN::END:
 				if (_in[i].script == L")") {
 					argument--;		//引数を減らす
-					orderData.code = OP_CODE::ARG;
+					orderData.code = 1 << 4;
+					orderData.code |= OP_CODE::ARG;
 					orderData.token = _in[i];
 					out.push_back(orderData);
 				}
@@ -309,10 +331,12 @@ void SEMANTIC::Compile() {
 	}
 	//書出し用の内容へ
 	for (int i = 0; i < result.size(); i++) {
-		vector<char> dataSize = ToByte(i+1);		//記録する行を取り出す
-		byte.insert(byte.end(), dataSize.begin(), dataSize.end());		//行を記録
+		//vector<char> dataSize = ToByte(i + 1);		//記録する行を取り出す
+		//byte.insert(byte.end(), dataSize.begin(), dataSize.end());		//行を記録
 		for (int j = 0; j < result[i].size(); j++) {
 			vector<char> temp;
+			vector<char> dataSize = ToByte(i + 1);		//記録する行を取り出す
+			byte.insert(byte.end(), dataSize.begin(), dataSize.end());		//行を記録
 			//i+1がスクリプトファイルの現在読んでいる行
 			//バイト変換
 			switch (result[i][j].code & 0x0F) {		//上位4bitは考慮しない
@@ -328,6 +352,18 @@ void SEMANTIC::Compile() {
 				break;
 			case OP_CODE::VAL:
 				//数値
+				temp = ToByte(1 + sizeof(int));
+				byte.insert(byte.end(), temp.begin(), temp.end());
+				byte.push_back(result[i][j].code);		//命令概要書出し
+				temp = ToByte(_wtoi(result[i][j].token.script.c_str()));		//数値データに直して1バイト単位に切り分ける
+				//for (int k = 0; k < result[i][j].token.script.size(); k++) {
+				//	temp = ToByte(result[i][j].token.script[k]);			//文字を1バイトデータに分ける
+				//	byte.insert(byte.end(), temp.begin(), temp.end());		//文字データを記録
+				//}
+				byte.insert(byte.end(), temp.begin(), temp.end());
+				break;
+			case OP_CODE::VAR:
+				//変数
 				temp = ToByte(1 + sizeof(wchar_t) * result[i][j].token.script.size());
 				byte.insert(byte.end(), temp.begin(), temp.end());
 				byte.push_back(result[i][j].code);
@@ -335,6 +371,7 @@ void SEMANTIC::Compile() {
 					temp = ToByte(result[i][j].token.script[k]);			//文字を1バイトデータに分ける
 					byte.insert(byte.end(), temp.begin(), temp.end());		//文字データを記録
 				}
+				break;
 			case OP_CODE::FUNC:
 				//関数
 				temp = ToByte(1 + sizeof(wchar_t) * result[i][j].token.script.size());
@@ -347,17 +384,13 @@ void SEMANTIC::Compile() {
 				break;
 			case OP_CODE::ARG:
 				//引数
-				temp = ToByte(1 + sizeof(wchar_t) * result[i][j].token.script.size());
+				temp = ToByte(1);		//引数は引数である識別子があればいい
 				byte.insert(byte.end(), temp.begin(), temp.end());
 				byte.push_back(result[i][j].code);
-				for (int k = 0; k < result[i][j].token.script.size(); k++) {
-					temp = ToByte(result[i][j].token.script[k]);			//文字を1バイトデータに分ける
-					byte.insert(byte.end(), temp.begin(), temp.end());		//文字データを記録
-				}
 				break;
 			case OP_CODE::OP:
 				//演算子
-				byte.push_back(1);		//演算子は命令概要の1バイトで完結する
+				temp = ToByte(1);		//演算子は命令概要の1バイトで完結する
 				byte.insert(byte.end(), temp.begin(), temp.end());		//1命令のデータサイズ
 				byte.push_back(result[i][j].code);		//命令概要
 				break;
@@ -371,16 +404,18 @@ void SEMANTIC::Compile() {
 					temp = ToByte(result[i][j].token.script[k]);			//文字を1バイトデータに分ける
 					byte.insert(byte.end(), temp.begin(), temp.end());		//文字データを記録
 				}
+				break;
 			default:
 				break;
 			}
 		}
 	}
 
+#if SYSTEM_MESSAGE > 3
 	for (int i = 0; i < byte.size(); i++) {
 		cout << byte[i] << endl;
 	}
-
+#endif
 	//ファイルの作成
 	ofstream file;
 	file.open("SCRIPT.ric", ios::out | ios::binary | ios::trunc);		//ファイルの新規作成
