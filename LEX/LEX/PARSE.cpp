@@ -272,7 +272,7 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 			return -1;
 		}
 	//-----------------------------
-	//スタックP 区切り文字
+	//スタックP 引数の区切り
 	//-----------------------------
 	case STACK_TYPE::ST_P:
 		switch (_in) {
@@ -282,6 +282,8 @@ int PARSE::RulesNum(STACK_TYPE _stack, TOKEN_TYPE _in) {
 			return 53;
 		case TOKEN_TYPE::TT_EPAR:
 			return 52;
+		case TOKEN_TYPE::TT_SPAR:
+			return 54;
 		default:
 			break;
 		}
@@ -320,6 +322,10 @@ void PARSE::Rules(int _rulenum) {
 #endif
 			if (input.front().str != L" ") {		//空白は処理しない
 				switch (input.front().type) {		//書き出す内容
+				case TOKEN_TYPE::TT_EBRACKET:
+					oldToken = ORDER_TOKEN::END;		//強制切り替え
+					break;
+				case TOKEN_TYPE::TT_TAB:			//本来ならTABは記録せずに命令が名前であることを記録する
 				case TOKEN_TYPE::TT_STRING:
 				case TOKEN_TYPE::TT_NUMBER:
 				case TOKEN_TYPE::TT_OP:
@@ -331,15 +337,17 @@ void PARSE::Rules(int _rulenum) {
 						tmp.token = ORDER_TOKEN::END;
 						order.push_back(tmp);
 					}
-					else if (order.size() == 0 || order.back().token != nowToken) {
+					else if (order.size() == 0 || oldToken != nowToken) {
 						//オーダー最後のトークンと違う時追加処理
 						ORDER tmp;
 						tmp.token = nowToken;
 						order.push_back(tmp);
+						oldToken = nowToken;
+
 					}
 					order.back().script += input.front().str;		//入力取得
+					break;
 				}
-
 			}
 			stack.erase(stack.begin());
 			input.erase(input.begin());
@@ -613,9 +621,9 @@ void PARSE::Rules(int _rulenum) {
 		token_stack.push_back(TOKEN_TYPE::TT_OP);			// OP
 		nowToken = ORDER_TOKEN::OPERATION;
 		break;
-	case 49:	//49.A'→[F]AP
-		stack[0] = ST_Ad;							// P
-		stack.insert(stack.begin(), STACK_TYPE::ST_A);			// A
+	case 49:	//49.A'→[F]P
+		stack[0] = ST_P;							// P
+		//stack.insert(stack.begin(), STACK_TYPE::ST_A);			// A
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// ]
 		stack.insert(stack.begin(), STACK_TYPE::ST_F);			// F
 		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		// [
@@ -648,6 +656,15 @@ void PARSE::Rules(int _rulenum) {
 		token_stack.push_back(TOKEN_TYPE::TT_SPACE);
 		token_stack.push_back(TOKEN_TYPE::TT_OP);
 		nowToken = ORDER_TOKEN::OPERATION;
+		break;
+	case 54:	//54.P→(A')P
+		stack.front() = STACK_TYPE::ST_P;						//P
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//)
+		stack.insert(stack.begin(), STACK_TYPE::ST_Ad);			//A'
+		stack.insert(stack.begin(), STACK_TYPE::ST_TOKEN);		//(
+		token_stack.push_back(TOKEN_TYPE::TT_EPAR);
+		token_stack.push_back(TOKEN_TYPE::TT_SPAR);
+		nowToken = ORDER_TOKEN::ARGUMENT;
 		break;
 	default:
 		//エラー ルールがない

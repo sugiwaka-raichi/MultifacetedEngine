@@ -75,6 +75,7 @@ private:
 	vector<ORDER> order;		//一行の命令一覧
 	vector<vector<ORDER>> orderList;		//構文解析後の命令一覧
 	ORDER_TOKEN nowToken;		//現在判別しているトークン
+	ORDER_TOKEN oldToken;		//前回判別しているトークン
 
 	PARSE();
 	int RulesNum(STACK_TYPE _stack,TOKEN_TYPE _in);		//解析表から対応するルールを識別する関数
