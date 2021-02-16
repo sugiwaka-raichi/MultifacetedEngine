@@ -12,10 +12,212 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 	//逆ポーランド記法に置き換える
 	//-------------------------------------------------------
 	for (int i = 0; i < _in.size(); i++) {
-		ORDER_PRIORITY tmp;
-		ORDER_DATA orderData;
+		ORDER_PRIORITY tmp;			//操車場アルゴリズムで入れ替えを行うデータ
+		ORDER_DATA orderData;		//出力に直接入れるデータ
 		bool stackFlag = false;		//スタック入れるものかどうか
+		bool wOperator = false;		//二つ演算子が存在する演算子
 
+		switch (_in[i].token) {
+		case ORDER_TOKEN::STRING:
+			orderData.code = OP_CODE::TEXT;		//文字列系
+			orderData.token = _in[i];
+			if (argument > 0) {
+				//引数であればセリフであることはない
+				orderData.code |= TEXT_TYPE::STRING << 4;		//文字列
+			}
+			else {
+				//水平タブがあればその位置、なければ-1を入れる
+				int find = _in[i].script.find(0x09);
+				if (find != wstring::npos) {
+					//あればセリフ系
+					if (find == 0) {
+						//先頭であれば名前無し
+						orderData.code |= TEXT_TYPE::TEXT_ONLY << 4;
+					}
+					else {
+						//先頭でなければ名前付き
+						orderData.code |= TEXT_TYPE::NAME_TEXT << 4;
+					}
+				}
+				else {
+					//なければ文字列
+					orderData.code |= TEXT_TYPE::STRING << 4;		//文字列
+				}
+			}
+			out.push_back(orderData);
+			break;
+		case ORDER_TOKEN::FUNCTION:		//関数
+			orderData.token = _in[i];			//トークン情報を入れる
+			orderData.code = OP_CODE::FUNC;		//命令は関数
+			out.push_back(orderData);			//命令情報を出力に入れる
+			break;
+		case ORDER_TOKEN::LABEL:		//ラベル
+			orderData.token = _in[i];
+			orderData.code = OP_CODE::LABEL;
+			out.push_back(orderData);
+			break;
+		case ORDER_TOKEN::VALUE:		//数値
+			orderData.code = OP_CODE::VAL;
+			orderData.token = _in[i];
+			//小数点が含まれるかどうかを調べる
+			if (_in[i].script.find(L'.') != wstring::npos) {
+				//含まれていれば
+				orderData.code |= VAL_TYPE::FLOAT << 4;		//追記情報に実数であるということを記す
+			}
+			else {
+				//含まれていなければ
+				orderData.code |= VAL_TYPE::INT << 4;		//整数であることを記す
+			}
+			out.push_back(orderData);
+			break;
+		case ORDER_TOKEN::GVARIABLE:	//グローバル変数
+			orderData.token = _in[i];
+			orderData.code = OP_CODE::VAR | (VAR_TYPE::GLOBAL << 4);
+			out.push_back(orderData);
+			break;
+		case ORDER_TOKEN::LVARIABLE:	//ローカル変数
+			orderData.token = _in[i];
+			orderData.code = OP_CODE::VAR | (VAR_TYPE::LOCAL << 4);
+			out.push_back(orderData);
+			break;
+		case ORDER_TOKEN::OPERATION:	//演算子
+			tmp.order.code = orderData.code = OP_CODE::OP;		//演算子であるということ
+			tmp.order.token = orderData.token = _in[i];
+			//演算子が二つ使われるか
+			if (_in[i].script.size() > 1) {
+				if (_in[i].script[1] == L'=') {
+					//右辺が=であること
+					wOperator = true;
+				}
+				else {
+					//違えばエラーとして返す
+					wcout << L"ERROR\n" << _in[i].script << L"は演算子として正しくない\n";
+					return;
+				}
+			}
+			//詳細な内容
+			switch (_in[i].script.front()) {
+			case L'+':
+				//加算
+				tmp.order.code |= OPERATOR::ADD << 4;
+				tmp.priority = 2;
+				if (wOperator) {
+					tmp.order.code |= 0x80;		//後ろに=が付く
+					tmp.priority = 1;
+				}
+				stackFlag = true;
+				break;
+			case L'-':
+				//減算
+				tmp.order.code |= OPERATOR::SUBT << 4;
+				tmp.priority = 2;
+				if (wOperator) {
+					tmp.order.code |= 0x80;
+					tmp.priority = 1;
+				}
+				stackFlag = true;
+				break;
+			case L'*':
+				//乗算
+				tmp.order.code |= OPERATOR::MUL << 4;
+				tmp.priority = 3;
+				if (wOperator) {
+					tmp.order.code |= 0x80;
+					tmp.priority = 1;
+				}
+				stackFlag = true;
+				break;
+			case L'/':
+				//除算
+				tmp.order.code |= OPERATOR::DIV << 4;
+				tmp.priority = 3;
+				if (wOperator) {
+					tmp.order.code |= 0x80;
+					tmp.priority = 1;
+				}
+				stackFlag = true;
+				break;
+			case L'=':
+				//代入
+				tmp.order.code |= OPERATOR::SUBS << 4;
+				tmp.priority = 1;
+				if (wOperator) {
+					orderData.code = tmp.order.code | 0x80;
+				}
+				else {
+					stackFlag = true;
+				}
+				break;
+			case L'<':
+				//小なり
+				orderData.code = OPERATOR::SMALL << 4;
+				if (wOperator) {
+					orderData.code |= 0x80;
+				}
+				break;
+			case L'>':
+				//大なり
+				orderData.code = OPERATOR::GREATER << 4;
+				if (wOperator) {
+					orderData.code |= 0x80;
+				}
+				break;
+			case L'!':
+				//否定
+				if (wOperator) {
+					orderData.code = OPERATOR::NOT << 4;
+				}
+				else {
+					cout << "ERROR\n";
+					return;
+				}
+				break;
+			default:
+				//エラー
+				break;
+			}
+			if (!stackFlag) {
+				//スタックに入れる内容でなければ出力に渡す
+				orderData.token = _in[i];
+				out.push_back(orderData);
+			}
+			wOperator = false;
+			break;
+		case ORDER_TOKEN::ARGUMENT:		//引数位置
+			//優先度無し 直前の関数の引数
+			orderData.token = _in[i];
+			orderData.code = OP_CODE::ARG;
+			out.push_back(orderData);
+			argument++;
+			break;
+		case ORDER_TOKEN::PAR:			//()
+			tmp.order.token = _in[i];
+			stackFlag = true;
+			break;
+		case ORDER_TOKEN::END:			//終了(引数の終了含む)
+			if (argument > 0 && _in[i].script.find(L')') != wstring::npos) {
+				orderData.token = _in[i];
+				orderData.code = OP_CODE::ARG | 0x10;		//引数終了
+				out.push_back(orderData);
+				argument--;
+			}
+			else {
+				for (int j = stack.size() - 1; stack[j].order.token.token != ORDER_TOKEN::PAR; j--) {
+					if (j >= stack.size()) {
+						//error
+						wcout << L"()の数が合いません" << endl;
+						return;
+					}
+					out.push_back(stack.back().order);
+					stack.pop_back();//(を取り出す
+				}
+				stack.pop_back();//)を取り出す
+			}
+			break;
+		default:
+			break;
+		}
+/*
 		if (argument == 0) {
 			switch (_in[i].token)
 			{
@@ -179,7 +381,7 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 				out.push_back(orderData);
 				break;
 			case ORDER_TOKEN::OPERATION:
-				//演算子以下に分けて処理を行う*/
+				//演算子以下に分けて処理を行う
 				if (_in[i].script.size() > 1) {
 					//二文字で構成される演算子
 					switch (_in[i].script.front()) {
@@ -247,7 +449,7 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 
 			//out.push_back(_in[i]);
 		}
-
+		*/
 		if (stackFlag) {
 			//スタックから取り出す処理
 			if (stack.size() > 0 && stack.back().priority >= tmp.priority) {
@@ -268,6 +470,7 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 					}
 				}
 			}
+			//)でなければ入れる
 			if (tmp.order.token.token != ORDER_TOKEN::END) {
 				stack.push_back(tmp);
 			}
@@ -309,6 +512,7 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 		wcout << out[i].token.script << ' ';
 	}
 	wcout << endl;
+	cout << "---------------------------------------------" << endl;
 #endif
 	result.push_back(out);
 }
@@ -329,6 +533,7 @@ void SEMANTIC::Compile() {
 		vector<char> Lines = ToByte(result.size());		//行数をバイト単位に直したデータ
 		byte.insert(byte.end(), Lines.begin(), Lines.end());
 	}
+
 	//書出し用の内容へ
 	for (int i = 0; i < result.size(); i++) {
 		//vector<char> dataSize = ToByte(i + 1);		//記録する行を取り出す
