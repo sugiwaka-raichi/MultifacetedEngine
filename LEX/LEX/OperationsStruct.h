@@ -66,7 +66,7 @@ enum VAL_TYPE {
 //テキストの種類
 //----------------------------
 enum TEXT_TYPE {
-	TT_ERROR = 0x00,
+	STRING = 0x00,
 	NAME_TEXT = 0x01,
 	TEXT_ONLY
 };
