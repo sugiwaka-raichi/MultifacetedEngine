@@ -7,7 +7,7 @@ using namespace std;
 class StringOperation {
 private:
 public:
-	static vector<string> Split(string str, char ragex);		//Žw’è•¶Žš•ªŠ„
+	static vector<wstring> Split(wstring str, char ragex);		//Žw’è•¶Žš•ªŠ„
 
 };
 

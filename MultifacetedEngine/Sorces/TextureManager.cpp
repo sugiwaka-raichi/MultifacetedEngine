@@ -2,7 +2,7 @@
 #include "ERROR.h"
 
 TEXTURE_DATA TextureManager::texture_data;	//テクスチャの情報
-string TextureManager::tex_directory;		//テクスチャディレクトリ名
+wstring TextureManager::tex_directory;		//テクスチャディレクトリ名
 
 TextureManager::TextureManager() {
 	//FileDataInit();
@@ -61,17 +61,17 @@ bool TextureManager::FileDataInit() {
 //-------------------------------------------------------
 //ロード処理
 //-------------------------------------------------------
-bool TextureManager::TextureLoad(string filename) {
+bool TextureManager::TextureLoad(wstring filename) {
 	//Textureフォルダの最後までループ	
 	for (int i = 0; i < texture_data.filedata->filenum; i++) {
 		//対象のファイルかファイル名で確認
 		if (texture_data.filedata->filename[i] == filename) {
-			string filepath = tex_directory + TEXT("/") + filename;	//読み込みに使うファイルパスを作成
+			wstring filepath = tex_directory + TEXT("/") + filename;	//読み込みに使うファイルパスを作成
 			//ロード処理
 			if (FAILED(D3DXCreateTextureFromFile(GetDevice(), filepath.c_str(), &texture_data.texture[i]))) {
 				//失敗した場合エラーメッセージを出す
-				string mes = TEXT("画像データ:") + texture_data.filedata->filename[i] + TEXT("が、\n正しく読み込まれませんでした。");
-				ErrorMessage::ErrorMessageBox((LPCSTR)mes.c_str(), (LPCSTR)"TextureLoadError", MB_OK);
+				wstring mes = TEXT("画像データ:") + texture_data.filedata->filename[i] + TEXT("が、\n正しく読み込まれませんでした。");
+				ErrorMessage::ErrorMessageBox((LPCWSTR)mes.c_str(), (LPCWSTR)"TextureLoadError", MB_OK);
 				texture_data.texture[i] = nullptr;
 			}
 			texture_data.loadflag[i] = true;		//ロード
@@ -79,15 +79,15 @@ bool TextureManager::TextureLoad(string filename) {
 		}
 	}
 	//フォルダ内になければエラーメッセージを表示
-	string str = TEXT("画像データ:") + filename + TEXT("が、\n見つかりませんでした。");
-	ErrorMessage::ErrorMessageBox((LPCSTR)str.c_str(), (LPCSTR)"TextureLoadError", MB_OK);
+	wstring str = TEXT("画像データ:") + filename + TEXT("が、\n見つかりませんでした。");
+	ErrorMessage::ErrorMessageBox((LPCWSTR)str.c_str(), (LPCWSTR)"TextureLoadError", MB_OK);
 	return false;
 }
 
 //---------------------------------------------------------------
 //テクスチャ開放
 //---------------------------------------------------------------
-void TextureManager::DeleteTexture(string filename) {
+void TextureManager::DeleteTexture(wstring filename) {
 	for (int i = 0; i < texture_data.filedata->filenum; i++) {
 		if (texture_data.filedata->filename[i] == filename) {
 			delete texture_data.texture[i];
@@ -100,7 +100,7 @@ void TextureManager::DeleteTexture(string filename) {
 //---------------------------------------------------------------------
 //指定されたファイル名のテクスチャを渡す
 //---------------------------------------------------------------------
-LPDIRECT3DTEXTURE9* TextureManager::GetTexture(string texturename) {
+LPDIRECT3DTEXTURE9* TextureManager::GetTexture(wstring texturename) {
 	for (int i = 0; i < texture_data.filedata->filenum; i++) {
 		//対象のファイル名か判断し、かつロードされているか
 		if (texturename == texture_data.filedata->filename[i]) {
@@ -119,7 +119,7 @@ LPDIRECT3DTEXTURE9* TextureManager::GetTexture(string texturename) {
 //---------------------------------------------------------
 //読込先のディレクトリの変更
 //---------------------------------------------------------
-void TextureManager::SetDirectory(string directory) {
+void TextureManager::SetDirectory(wstring directory) {
 	tex_directory = directory;
 }
 

@@ -15,8 +15,8 @@ class Text:public OBJECT
 protected:
 	int size_width, size_height;
 	RECT rect;
-	string text;		//表示するテキスト
-	string buff;		//表示していくテキスト
+	wstring text;		//表示するテキスト
+	wstring buff;		//表示していくテキスト
 	int Red, Green, Blue;
 	int mode;		//表示位置モード
 	float time;
@@ -42,12 +42,12 @@ public:
 	void ChangeTextPositionAdd(float _x,float _y);
 	void ChangeColor(int r, int g, int b);
 	void ChangeFontSize(int, int);
-	void ChangeText(string);
+	void ChangeText(wstring);
 
 	//====================================
 	//テキスト効果
 	//====================================
-	void ChangeText(float _time, string _text);
+	void ChangeText(float _time, wstring _text);
 	void ChangeSpeed(float _time);
 	bool AllDispText();		//現バッファを全部表示する
 	void SetWait(float _time);

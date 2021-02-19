@@ -37,15 +37,15 @@ using namespace std;
 
 #define CLASS_NAME	TEXT("Class Name")
 #define WINDOW_NAME	TEXT("Title")
-#ifdef UNICODE
-//ユニコード用
-#define string wstring	//ユニコード用string
-#define LPCSTR LPWSTR	//ユニコード用LPCSTR
-#else
-//マルチバイト用
-#define string string		//マルチバイトstring
-#define LPCSTR LPCSTR		//マルチバイトLPSTR
-#endif
+//#ifdef UNICODE
+////ユニコード用
+//#define string wstring	//ユニコード用string
+//#define LPCSTR LPWSTR	//ユニコード用LPCSTR
+//#else
+////マルチバイト用
+//#define string string		//マルチバイトstring
+//#define LPCSTR LPCSTR		//マルチバイトLPSTR
+//#endif
 
 #define FULLSCREEN 	false				//フルスクリーンﾌﾗｸﾞ
 #define WINDOWSTYLE WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX	//ウィンドウサイズの変更を禁止したスタイル
@@ -73,7 +73,7 @@ typedef struct {
 //************************************************************
 //プロトタイプ宣言
 //************************************************************
-void ErrorMessageBox(LPCSTR, LPCSTR, UINT);
+void ErrorMessageBox(LPCWSTR, LPCWSTR, UINT);
 HWND GetHandle();
 
 //************************************************************

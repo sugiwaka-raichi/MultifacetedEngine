@@ -71,7 +71,7 @@ public:
 	void SetVP(int _vp);
 	void SetAngle(float _angle);
 	void SetLayer(int _layer);
-	void SetTag(string _tag);
+	void SetTag(wstring _tag);
 	void SetTexture(LPDIRECT3DTEXTURE9* p_tex);
 	void SetColor(D3DCOLOR _color);
 	void SetColor(COLOR _col, int _value);		//指定した色を変更する
@@ -93,7 +93,7 @@ public:
 	int GetVP();
 	float GetAngle();
 	int GetLayer();
-	string GetTag();
+	wstring GetTag();
 	D3DCOLOR GetColor();
 	int GetColor(COLOR _col);		//取得したい色を指定
 };

@@ -1,6 +1,6 @@
 #include "FileOperation.h"
 
-DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
+DIRECTORY_DATA* FileOperation::GetDirectoryData(wstring _path) {
 	DIRECTORY_DATA* data;			//ƒtƒ@ƒCƒ‹”‚Æƒtƒ@ƒCƒ‹–¼
 	HANDLE hwnd;				//ƒnƒ“ƒhƒ‹
 	WIN32_FIND_DATA	find_data;	//ƒtƒ@ƒCƒ‹î•ñ
@@ -9,13 +9,13 @@ DIRECTORY_DATA* FileOperation::GetDirectoryData(string _path) {
 	data->folderpath = _path;
 
 	//_path += "*.*";		//ƒƒCƒ‹ƒhƒJ[ƒhİ’è
-	string wild = _path + TEXT("*.*");
+	wstring wild = _path + TEXT("*.*");
 	hwnd = FindFirstFile(wild.c_str(), &find_data);		//æ“ªƒtƒ@ƒCƒ‹‚ğ’T‚·
 	if (hwnd == INVALID_HANDLE_VALUE) {
 		return nullptr;		//¸”s
 	}
 	do {
-		string str = find_data.cFileName;
+		wstring str = find_data.cFileName;
 		if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {		//ƒtƒ@ƒCƒ‹‚ªƒfƒBƒŒƒNƒgƒŠ‚Å‚ ‚ê‚Î 
 			//directory‚¾‚Á‚½ê‡‚Ìˆ—‚Í‚±‚±‚É‘‚­
 			if (str != TEXT(".") && str != TEXT("..")) {
@@ -94,7 +94,7 @@ int FileOperation::GetFolderSum(DIRECTORY_DATA* _data, int _findmode) {
 	return cnt;
 }
 
-int FileOperation::GetFileSum(DIRECTORY_DATA* _data, string _findmode) {	//ğŒ•t‚«ƒfƒBƒŒƒNƒgƒŠ‚ÌƒtƒHƒ‹ƒ_”
+int FileOperation::GetFileSum(DIRECTORY_DATA* _data, wstring _findmode) {	//ğŒ•t‚«ƒfƒBƒŒƒNƒgƒŠ‚ÌƒtƒHƒ‹ƒ_”
 	int cnt = 0;
 
 	if (_data == NULL) {
@@ -108,9 +108,9 @@ int FileOperation::GetFileSum(DIRECTORY_DATA* _data, string _findmode) {	//ğŒ•
 	return cnt;		//Œ»İ‚ÌƒtƒHƒ‹ƒ_”‚ğ•Ô‚·
 }
 
-vector<string> FileOperation::GetFolderPath(DIRECTORY_DATA* _data, int _findmode) {
-	vector<string> path;
-	vector<string> get;
+vector<wstring> FileOperation::GetFolderPath(DIRECTORY_DATA* _data, int _findmode) {
+	vector<wstring> path;
+	vector<wstring> get;
 	DIRECTORY_DATA* current_data = _data;
 
 	if (_data == NULL) {
@@ -152,12 +152,12 @@ vector<string> FileOperation::GetFolderPath(DIRECTORY_DATA* _data, int _findmode
 	return path;		//ƒtƒHƒ‹ƒ_ƒpƒX‚ğ“n‚·
 }
 
-vector<string> FileOperation::GetFileName(string filedata) {
-	vector<string> filename;
+vector<wstring> FileOperation::GetFileName(wstring filedata) {
+	vector<wstring> filename;
 	HANDLE hwnd;
 	WIN32_FIND_DATA find_data;
 
-	string wild = filedata + TEXT("*.*");
+	wstring wild = filedata + TEXT("*.*");
 #ifdef UNICODE
 	hwnd = FindFirstFile((LPCWSTR)wild.c_str(), &find_data);		//æ“ªƒtƒ@ƒCƒ‹‚ğ’T‚·
 #else

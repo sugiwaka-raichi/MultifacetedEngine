@@ -16,14 +16,14 @@ static class TextureManager
 {
 private:
 	static TEXTURE_DATA texture_data;	//テクスチャの情報
-	static string tex_directory;		//テクスチャディレクトリ名
+	static wstring tex_directory;		//テクスチャディレクトリ名
 
 public:
 	TextureManager();
 	static bool FileDataInit();		//ファイルデータ初期化
 	//bool TextureFilePath();		//テクスチャファイルのファイルパス取得(後にスクリプトファイルの情報から行うため不要?)
-	static bool TextureLoad(string texturename);		//テクスチャ読込
-	static void DeleteTexture(string texturename);		//テクスチャ開放
-	static LPDIRECT3DTEXTURE9* GetTexture(string texturename);	//テクスチャゲッター
-	static void SetDirectory(string directory);		//ディレクトリ設定
+	static bool TextureLoad(wstring texturename);		//テクスチャ読込
+	static void DeleteTexture(wstring texturename);		//テクスチャ開放
+	static LPDIRECT3DTEXTURE9* GetTexture(wstring texturename);	//テクスチャゲッター
+	static void SetDirectory(wstring directory);		//ディレクトリ設定
 };

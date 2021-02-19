@@ -232,7 +232,7 @@ void SquarePolygon::SetLayer(int _layer) {
 	layer = _layer;
 }
 
-void SquarePolygon::SetTag(string _tag) {
+void SquarePolygon::SetTag(wstring _tag) {
 	tag = _tag;
 }
 
@@ -348,7 +348,7 @@ int SquarePolygon::GetLayer() {
 	return layer;
 }
 
-string SquarePolygon::GetTag() {
+wstring SquarePolygon::GetTag() {
 	return tag;
 }
 

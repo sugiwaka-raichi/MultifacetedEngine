@@ -12,7 +12,7 @@
 // パラメータ構造体
 typedef struct {
 	int				filenum;	//ファイル数
-	vector<string>	filename;	//ファイル名
+	vector<wstring>	filename;	//ファイル名
 	vector<bool>	bLoop;		// デフォルトでfalse。
 	vector<bool>	loadflag;	//ロードフラグ
 	vector<IXAudio2SourceVoice*>    g_pSourceVoice;
@@ -23,8 +23,8 @@ typedef struct {
 
 typedef struct {
 	int				foldernum;			//フォルダ数
-	vector<string>	type;				//ファイルの種類(SE,BGMなど)
-	vector<string>  folderpath;			//フォルダのパス
+	vector<wstring>	type;				//ファイルの種類(SE,BGMなど)
+	vector<wstring>  folderpath;			//フォルダのパス
 	vector<SOUND_FILE_DATA>	filedata;	//ファイル情報
 }SOUND_FOLDER_DATA;
 
@@ -85,7 +85,7 @@ IXAudio2               *g_pXAudio2        = NULL;
 IXAudio2MasteringVoice *g_pMasteringVoice = NULL;
 
 char* pbuffer;
-string DefaultDirectory = L"./Asset/Sound/";		//デフォルトディレクトリパス
+wstring DefaultDirectory = L"./Asset/Sound/";		//デフォルトディレクトリパス
 SOUND_FOLDER_DATA sound_fodata;						//サウンドファイル情報
 bool sound_order_state = false;						//サウンド命令許可状態
 
@@ -93,8 +93,8 @@ bool sound_order_state = false;						//サウンド命令許可状態
 //    プロトタイプ宣言
 //-----------------------------------------------------------------
 void Normalization(DIRECTORY_DATA* _data);
-int FindFolderNum(string path);
-int FindFileNum(int foldernum,string filename);
+int FindFolderNum(wstring path);
+int FindFileNum(int foldernum,wstring filename);
 
 HRESULT FindChunk(HANDLE, DWORD, DWORD&, DWORD&);
 HRESULT ReadChunkData( HANDLE , void* , DWORD , DWORD );
@@ -241,7 +241,7 @@ void UninitSound(void)
 //=============================================================================
 // 再生
 //=============================================================================
-void PlaySound(string path, string filename) {
+void PlaySound(wstring path, wstring filename) {
 	if (sound_order_state) {
 		int fonum = FindFolderNum(path);
 		int finum = FindFileNum(fonum, filename);
@@ -257,7 +257,7 @@ void PlaySound(string path, string filename) {
 		sound_fodata.filedata[fonum].g_pSourceVoice[finum]->Start(0);
 	}
 	else {
-		string str = TEXT("filename:") + filename + TEXT("は読み込まれていません。\n終了する場合はOK");
+		wstring str = TEXT("filename:") + filename + TEXT("は読み込まれていません。\n終了する場合はOK");
 		if (IDOK == ErrorMessage::ErrorMessageBox(str.c_str(), TEXT("XAudio2 Play Error"), MB_OKCANCEL)) {
 			exit(1);
 		}
@@ -267,7 +267,7 @@ void PlaySound(string path, string filename) {
 //=============================================================================
 // 停止
 //=============================================================================
-void StopSound(string path, string filename) {
+void StopSound(wstring path, wstring filename) {
 	if (sound_order_state) {
 		int fonum = FindFolderNum(path);
 		int finum = FindFileNum(fonum, filename);
@@ -286,7 +286,7 @@ void StopSound(string path, string filename) {
 		}
 	}
 	else {
-		string str = TEXT("filename:") + filename + TEXT("は読み込まれていません。");
+		wstring str = TEXT("filename:") + filename + TEXT("は読み込まれていません。");
 		ErrorMessage::ErrorMessageBox(str.c_str(), TEXT("XAudio2 Stop Error"), MB_OK);
 	}
 	/*
@@ -305,7 +305,7 @@ void StopSound(string path, string filename) {
 //=============================================================================
 // 一時停止
 //=============================================================================
-void PauseSound(string path, string filename) {
+void PauseSound(wstring path, wstring filename) {
 	if (sound_order_state) {
 		int fonum = FindFolderNum(path);
 		int finum = FindFileNum(fonum, filename);
@@ -323,7 +323,7 @@ void PauseSound(string path, string filename) {
 		}
 	}
 	else {
-		string str = TEXT("filename:") + filename + TEXT("は読み込まれていません。");
+		wstring str = TEXT("filename:") + filename + TEXT("は読み込まれていません。");
 		ErrorMessage::ErrorMessageBox(str.c_str(), TEXT("XAudio2 Pause Error"), MB_OK);
 	}
 }
@@ -331,7 +331,7 @@ void PauseSound(string path, string filename) {
 //=============================================================================
 //ロード処理(?)
 //=============================================================================
-void LoadWave(string path, string filename, bool loop) {
+void LoadWave(wstring path, wstring filename, bool loop) {
 	//if (sound_order_state) {
 		FILE* file = nullptr;
 		HANDLE hFile;
@@ -343,17 +343,17 @@ void LoadWave(string path, string filename, bool loop) {
 		int finum = FindFileNum(fonum, filename);
 
 		if (finum < 0 || fonum < 0) {
-			string str = TEXT("ファイル名:") + filename + TEXT("の参照に失敗しました。\nファイルが見つかりませんでした。");
+			wstring str = TEXT("ファイル名:") + filename + TEXT("の参照に失敗しました。\nファイルが見つかりませんでした。");
 			ErrorMessage::ErrorMessageBox(str.c_str(), TEXT("Xaudio2 Load Error"), MB_OK);
 			
 			return;
 		}
 
 		//Waveファイルを開く
-		if (path.find_first_of(L"/") == string::npos) {		//パスではなく種別だった時
+		if (path.find_first_of(L"/") == wstring::npos) {		//パスではなく種別だった時
 			path = sound_fodata.folderpath[fonum];			//該当するフォルダパスを設定する
 		}
-		string filepath = path + filename;		//ファイルパス作成
+		wstring filepath = path + filename;		//ファイルパス作成
 		
 		hFile = CreateFile(filepath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 		if (hFile == INVALID_HANDLE_VALUE) {
@@ -448,7 +448,7 @@ void LoadWave(string path, string filename, bool loop) {
 	//}
 }
 
-int FindFileNum(int foldernum, string filename) {
+int FindFileNum(int foldernum, wstring filename) {
 	if (foldernum > -1) {
 		//指定フォルダ内の各ファイルを探索
 		for (int i = 0; i < sound_fodata.filedata[foldernum].filenum; i++) {
@@ -463,9 +463,9 @@ int FindFileNum(int foldernum, string filename) {
 
 }
 
-int FindFolderNum(string path) {
+int FindFolderNum(wstring path) {
 	//もし/が含まれていなければ
-	if (path.find_first_of(TEXT("/")) == string::npos) {
+	if (path.find_first_of(TEXT("/")) == wstring::npos) {
 		for (int i = 0; i < sound_fodata.foldernum; i++) {
 			if (path == sound_fodata.type[i]) {
 				return i;
@@ -488,9 +488,9 @@ void Normalization(DIRECTORY_DATA* _data) {
 
 	if (_data != NULL) {
 		int foldernum = FileOperation::GetFolderSum(_data, F_FIND_MODE::FM_FILE_EXISTANCE);		//ファイルの存在するフォルダの数を取得
-		int num = FileOperation::GetFileSum(_data, TEXT(".wav"));
+		int num = FileOperation::GetFileSum(_data, L".wav");
 		if (num > 0) {
-			vector<string> path;
+			vector<wstring> path;
 			sound_fodata.foldernum = foldernum;				//利用するフォルダ数取得
 			//sound_fodata.folderpath.resize(foldernum);		//フォルダパス要素数変更(ファイルの存在するフォルダ数分)
 			sound_fodata.filedata.resize(sound_fodata.foldernum);		//ファイル情報要素数変更
@@ -518,11 +518,11 @@ void Normalization(DIRECTORY_DATA* _data) {
 			sound_order_state = true;
 			return;
 		}
-		string str = TEXT("ファイルが存在していません。");
+		wstring str = TEXT("ファイルが存在していません。");
 		ErrorMessage::ErrorMessageBox(str.c_str(), TEXT("XAudio2 Init Error"), MB_OK);
 		return;
 	}
-	string str = TEXT("ディレクトリ情報の取得に失敗しています。");
+	wstring str = TEXT("ディレクトリ情報の取得に失敗しています。");
 	ErrorMessage::ErrorMessageBox(str.c_str(), TEXT("XAudio2 Init Error"), MB_OK);
 }
 
@@ -530,7 +530,7 @@ void SetVolume(float per) {
 	
 }
 
-void SetVolume(float per, string type) {
+void SetVolume(float per, wstring type) {
 	//ジャンル分けの仕組みを必ず用意する
 }
 
@@ -543,7 +543,7 @@ void SetSoundType() {
 	
 }
 
-void SetSoundType(string oldname, string newname) {
+void SetSoundType(wstring oldname, wstring newname) {
 	//一致する種類を調べていく
 	for (int i = 0; i < sound_fodata.foldernum; i++) {
 		if (sound_fodata.type[i] == oldname) {

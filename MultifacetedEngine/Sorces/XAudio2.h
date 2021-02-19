@@ -11,11 +11,11 @@
 
 using namespace std;
 
-#ifdef UNICODE
-#define string wstring
-#else
-#define string string
-#endif
+//#ifdef UNICODE
+//#define string wstring
+//#else
+//#define string string
+//#endif
 // サウンドファイル
 /*
 typedef enum
@@ -31,11 +31,11 @@ typedef enum
 //*****************************************************************************
 HRESULT InitSound(void);
 void UninitSound(void);
-void PlaySound(string path, string filename);
-void StopSound(string path, string filename);
-void PauseSound(string path, string filename);
-void LoadWave(string path, string filename, bool loop);
+void PlaySound(wstring path, wstring filename);
+void StopSound(wstring path, wstring filename);
+void PauseSound(wstring path, wstring filename);
+void LoadWave(wstring path, wstring filename, bool loop);
 void SetAudio(float per);
 void SetSoundType();
-void SetSoundType(string oldname, string newname);
+void SetSoundType(wstring oldname, wstring newname);
 //void AddSoundType(string type);

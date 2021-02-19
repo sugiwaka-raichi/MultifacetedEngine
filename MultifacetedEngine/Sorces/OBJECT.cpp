@@ -8,7 +8,7 @@ void OBJECT::SetDispFlag(bool _flag) {
 	dispFlag = _flag;
 }
 
-void OBJECT::SetName(string _name) {
+void OBJECT::SetName(wstring _name) {
 	name = _name;
 }
 
@@ -21,7 +21,7 @@ bool OBJECT::GetDispFlag()
 	return dispFlag;
 }
 
-string OBJECT::GetObjName()
+wstring OBJECT::GetObjName()
 {
 	return name;
 }

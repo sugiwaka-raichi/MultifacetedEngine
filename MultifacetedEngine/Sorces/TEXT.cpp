@@ -163,14 +163,14 @@ void Text::ChangeFontSize(int width, int height) {
 //=========================================
 //テキスト変更
 //=========================================
-void Text::ChangeText(string t) {
+void Text::ChangeText(wstring t) {
 	text = t;
 }
 
 //=========================================
 //バッファと表示タイミングの変更
 //=========================================
-void Text::ChangeText(float _time, string _text) {
+void Text::ChangeText(float _time, wstring _text) {
 	time = _time * 60;
 	buff = _text;
 	text.clear();

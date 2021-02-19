@@ -9,6 +9,7 @@
 #include "TextureManager.h"
 #include "TEXT.h"
 #include "Button.h"
+#include "Script.h"
 
 //==================================================
 //グローバル変数
@@ -27,7 +28,7 @@ Button button;		//仮ボタン
 vector<OBJECT*> stack;			//オブジェクトの命令を実行するための箱
 
 int anim[3] = { 10,0,-10 };			//アニメーション(仮)
-vector<string> serifuList;			//セリフ一覧
+vector<wstring> serifuList;			//セリフ一覧
 int currentSerifu = 0;				//現在のセリフ位置
 float textSpeed = 0.2f;				//テキスト表示速度
 //*****************************************************************
@@ -156,11 +157,18 @@ bool GameInit(HINSTANCE hinst, HWND hWnd, int width, int height, bool fullscreen
 	stack.push_back(&serifu);
 
 	//-------------------------------------------------
+	//スクリプトの初期処理
+	//-------------------------------------------------
+	Script* script = &Script::GetScriptInstance();
+	script->LoadHeader();
+	script->LoadScript();
+
+	//-------------------------------------------------
 	//セリフの設定(本来はファイルから読み込む)
 	//-------------------------------------------------
-	serifuList.push_back(L"わふー");
-	serifuList.push_back(L"おはようございます！");
-	serifuList.push_back(L"お\nわ\nり");
+	//serifuList.push_back(L"わふー");
+	//serifuList.push_back(L"おはようございます！");
+	//serifuList.push_back(L"お\nわ\nり");
 	return true;
 }
 
@@ -168,7 +176,23 @@ void GameUpdate() {
 	//-----------------------------
 	//実行命令
 	//-----------------------------
-	
+	Script* script = &Script::GetScriptInstance();	//インスタンスを取得
+	char op = script->GetLastOperation();			//最後に読込んだ命令を取得する
+	switch (op & 0x0F)
+	{
+	case OP_CODE::TEXT:
+		serifuList.push_back(script->GetNowDialogue());		//セリフを取得
+		break;
+	case OP_CODE::FUNC:
+		//ToDo:実行する関数の情報を取得
+		//ToDo:実行する関数の呼出
+		//ToDo:実行した関数からの戻り値取得
+		break;
+	default:
+		break;
+	}
+	//次の命令を読込む
+	script->LoadScript();
 
 	//#####################
 	//test
