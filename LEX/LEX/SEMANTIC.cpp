@@ -49,6 +49,11 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 		case ORDER_TOKEN::FUNCTION:		//関数
 			orderData.token = _in[i];			//トークン情報を入れる
 			orderData.code = OP_CODE::FUNC;		//命令は関数
+			if (i + 1< _in.size()) {
+				if (_in[i + 1].token == ORDER_TOKEN::ARGUMENT) {
+					orderData.code |= 0x10;
+				}
+			}
 			out.push_back(orderData);			//命令情報を出力に入れる
 			break;
 		case ORDER_TOKEN::LABEL:		//ラベル
@@ -62,11 +67,11 @@ void SEMANTIC::Soushajo(vector<ORDER> _in) {
 			//小数点が含まれるかどうかを調べる
 			if (_in[i].script.find(L'.') != wstring::npos) {
 				//含まれていれば
-				orderData.code |= VAL_TYPE::FLOAT << 4;		//追記情報に実数であるということを記す
+				orderData.code |= VAL_TYPE::VAL_FLOAT << 4;		//追記情報に実数であるということを記す
 			}
 			else {
 				//含まれていなければ
-				orderData.code |= VAL_TYPE::INT << 4;		//整数であることを記す
+				orderData.code |= VAL_TYPE::VAL_INT << 4;		//整数であることを記す
 			}
 			out.push_back(orderData);
 			break;
