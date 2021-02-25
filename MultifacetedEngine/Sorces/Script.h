@@ -37,7 +37,12 @@ private:
 	int fileLine = 0;
 	int seek;						//読込んでいる位置
 	map<wstring, int> label;		//ラベル位置の記録
-	vector<wstring> dialogue;			//セリフ一覧(現在のセリフ+バックログ)
+	vector<wstring> dialogue;		//セリフ一覧(現在のセリフ+バックログ)
+	vector<wstring> func;			//処理待ち関数
+	vector<wstring> arg;			//処理待ち引数
+	map<wstring, float> variable;	//変数一覧
+	vector<float> value;			//数値管理
+	
 	wstring fileName = L"SCRIPT.ric";
 	char lastOPCode;			//最後の命令内容
 
@@ -51,6 +56,7 @@ public:
 	void LoadScript();
 	void LoadScript(int _seek);
 	wstring GetNowDialogue();
+	int GetSeek(wstring _label);
 	char GetLastOperation();		//最後に取得した命令の概要を渡す関数
+	void SetSeek(int _seek);		//読込位置設定
 };
-
