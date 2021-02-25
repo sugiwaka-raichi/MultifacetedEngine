@@ -178,7 +178,7 @@ void GameUpdate() {
 	//-----------------------------
 	Script* script = &Script::GetScriptInstance();	//インスタンスを取得
 	char op = script->GetLastOperation();			//最後に読込んだ命令を取得する
-	switch (op & 0x0F)
+	switch (op & 0x0F)		//下位4bitで識別
 	{
 	case OP_CODE::TEXT:
 		serifuList.push_back(script->GetNowDialogue());		//セリフを取得
@@ -189,6 +189,9 @@ void GameUpdate() {
 		//ToDo:実行した関数からの戻り値取得
 		break;
 	default:
+		//test ラベルジャンプ
+		//script->LoadScript(script->GetSeek(L"START"));
+		script->SetSeek(script->GetSeek(L"START"));
 		break;
 	}
 	//次の命令を読込む
@@ -245,7 +248,7 @@ void GameUpdate() {
 			}
 			else {
 				//デバッグなので先頭に戻す
-				currentSerifu = 0;
+				//currentSerifu = 0;
 			}
 		}
 	}
