@@ -56,10 +56,10 @@ enum VAR_TYPE {
 //---------------------------
 enum VAL_TYPE {
 	VAL_ERROR = 0x00,
-	INT = 0x01,
-	FLOAT,
-	UNSIGNED_INT,
-	UNSIGNED_FLOAT,
+	VAL_INT,
+	VAL_FLOAT,
+	VAL_UNSIGNED_INT,
+	VAL_UNSIGNED_FLOAT,
 };
 
 //----------------------------
